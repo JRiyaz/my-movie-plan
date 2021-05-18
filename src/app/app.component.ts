@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GlobalConstants } from './commons/global-constants';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'my-movie-plan';
+  title: string = GlobalConstants.APP_NAME;
 }
