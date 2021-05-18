@@ -1,0 +1,37 @@
+<div class="wrapper">
+  <h1 class="text-center mb-3 p-2 rounded border border-2 shadow-sm">
+    Add New Show
+  </h1>
+  <form class="example-form p-4" [formGroup]="showForm">
+    <mat-form-field class="d-block w-100 text-dark" appearance="outline">
+      <mat-label>Show Name</mat-label>
+      <input matInput placeholder="Matnee" formControlName="name" />
+      <mat-error *ngIf="nameErrors">
+        {{ nameErrors }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="d-block w-100 text-dark" appearance="outline">
+      <mat-label>Show Timing</mat-label>
+      <input
+        type="time"
+        matInput
+        placeholder="Matnee"
+        formControlName="startTime"
+      />
+      <mat-error *ngIf="startTimeErrors" color="accent"
+        >{{ startTimeErrors }}
+      </mat-error>
+    </mat-form-field>
+  </form>
+  <button mat-raised-button (click)="onCancel()" class="me-2">Cancel</button>
+  <button
+    mat-raised-button
+    (click)="onSubmit()"
+    [disabled]="!showForm.valid"
+    color="primary"
+    class="ms-2"
+  >
+    Submit
+  </button>
+</div>
