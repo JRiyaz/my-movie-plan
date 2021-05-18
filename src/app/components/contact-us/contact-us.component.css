@@ -1,0 +1,10 @@
+.contact-us-banner {
+  background: url(//in.bmscdn.com/webin/static/aboutus/bg.jpg) no-repeat;
+  background-size: cover;
+  height: 500px;
+}
+.contact-us-banner-text {
+  padding-top: 180px;
+  background-color: transparent;
+  text-align: center;
+}
