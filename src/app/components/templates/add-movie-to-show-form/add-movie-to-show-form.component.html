@@ -1,0 +1,107 @@
+<div class="wrapper">
+  <h1 class="text-center mb-3 p-2 rounded border border-2 shadow-sm">
+    Add Movie To Show
+  </h1>
+
+  <form class="example-form p-4" [formGroup]="movieShowForm">
+    <mat-form-field class="d-block w-100 text-dark" appearance="outline">
+      <mat-label>Select Movie</mat-label>
+      <mat-select
+        matInput
+        aria-label="State"
+        [formControl]="movieId"
+        (click)="movieId.reset()"
+        (selectionChange)="onMovieChange($event)"
+      >
+        <mat-option
+          *ngFor="let movie of filteredMovies | async"
+          [value]="movie.id"
+          class="h-auto py-1"
+        >
+          <img
+            class="example-option-img me-2 rounded"
+            aria-hidden
+            [src]="movie.image"
+            height="120"
+            width="120"
+          />
+          <span class="me-1">{{ movie.name }}</span> |
+          <small class="me-1">Release: {{ formatDate(movie.release) }}</small>
+          |
+          <small class="me-1">Added: {{ formatDate(movie.addedOn) }}</small>
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="movieIdErrors">{{ movieIdErrors }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="d-block w-100 text-dark">
+      <mat-label>Enter a date range</mat-label>
+      <mat-date-range-input
+        [formGroup]="range"
+        [rangePicker]="picker"
+        [min]="startDate"
+        [max]="endDate"
+      >
+        <input matStartDate formControlName="from" placeholder="Start date" />
+        <input matEndDate formControlName="to" placeholder="End date" />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+      <mat-error class="d-inline-block mx-1" *ngIf="fromDateErrors">{{
+        fromDateErrors
+      }}</mat-error>
+      <mat-error class="d-inline-block mx-1" *ngIf="toDateErrors">{{
+        toDateErrors
+      }}</mat-error>
+      <!-- <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')"
+        >Invalid start date</mat-error
+      >
+      <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')"
+        >Invalid end date</mat-error
+      > -->
+    </mat-form-field>
+    <fieldset>
+      <legend class="lead">Price details</legend>
+      <div class="row g-0 justify-content-around">
+        <mat-form-field
+          appearance="outline"
+          class="d-block col-4 px-1 text-dark"
+        >
+          <mat-label>Gold Section</mat-label>
+          <input type="number" matInput formControlName="gold" />
+          <mat-error *ngIf="goldPriceErrors">{{ goldPriceErrors }}</mat-error>
+        </mat-form-field>
+        <mat-form-field
+          appearance="outline"
+          class="d-block col-4 px-1 text-dark"
+        >
+          <mat-label>Silver Section</mat-label>
+          <input type="number" matInput formControlName="silver" />
+          <mat-error *ngIf="silverPriceErrors">{{
+            silverPriceErrors
+          }}</mat-error>
+        </mat-form-field>
+        <mat-form-field
+          appearance="outline"
+          class="d-block col-4 px-1 text-dark"
+        >
+          <mat-label>General Section</mat-label>
+          <input type="number" matInput formControlName="general" />
+          <mat-error *ngIf="generalPriceErrors">{{
+            generalPriceErrors
+          }}</mat-error>
+        </mat-form-field>
+      </div>
+    </fieldset>
+  </form>
+  <button mat-raised-button (click)="onCancel()" class="me-2">Cancel</button>
+  <button
+    mat-raised-button
+    (click)="onSubmit()"
+    [disabled]="!movieShowForm.valid"
+    color="primary"
+    class="ms-2"
+  >
+    Submit
+  </button>
+</div>
