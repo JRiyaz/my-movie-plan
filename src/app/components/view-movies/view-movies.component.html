@@ -1,0 +1,226 @@
+<div class="px-lg-5 row g-0 my-5 justify-content-around position-relative">
+  <div class="col-3">
+    <div class="sorting text-center mb-3 align-self-center">
+      <h2 class="fs-2 text-center text-dark text-uppercase">Sort By</h2>
+      <br />
+      <mat-form-field appearance="outline" class="d-block w-100">
+        <mat-label>Sort By</mat-label>
+        <mat-select [formControl]="genre" multiple>
+          <mat-option *ngFor="let genre of genres" [value]="genre">{{
+            genre
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="filter">
+      <h2 class="fs-2 text-center text-dark text-uppercase">Filters</h2>
+      <br />
+      <br />
+      <mat-accordion
+        class="example-headers-align"
+        multi
+        togglePosition="before"
+      >
+        <!-- <mat-expansion-panel class="rounded my-1" (opened)="(true)">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Show </mat-panel-title>
+            <mat-panel-description
+              (click)="clearLanguageFilter()"
+              class="clear-filter text-end d-inline-block pe-cursor"
+            >
+              Clear
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <form class="example-form row g-0">
+            <div class="mx-1" *ngFor="let type of types">
+              <input
+                type="radio"
+                class="btn-check"
+                name="show"
+                [id]="type"
+                value="{{ typeResolve(type) }}"
+                [(ngModel)]="show"
+                autocomplete="off"
+                [checked]="type == 'both'"
+              />
+              <label class="btn btn-warning" for="{{ type }}">{{
+                typeResolve(type)
+              }}</label>
+            </div>
+          </form>
+        </mat-expansion-panel> -->
+        <mat-expansion-panel class="rounded my-1">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Language </mat-panel-title>
+            <mat-panel-description
+              (click)="clearLanguageFilter()"
+              class="clear-filter text-end d-inline-block pe-cursor"
+            >
+              Clear
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <!-- <p
+            class="text-end clear-filter pe-cursor"
+            (click)="clearLanguageFilter()"
+          >
+            clear
+          </p> -->
+          <form class="example-form row g-0">
+            <div class="mx-1">
+              <input
+                type="checkbox"
+                class="btn-check"
+                id="hindi"
+                name="hindi"
+                [(ngModel)]="languages.hindi"
+              />
+              <label
+                class="btn btn-primary btn-sm"
+                for="hindi"
+                [ngClass]="{ 'border-warning bg-warning': languages.hindi }"
+                >Hindi</label
+              >
+            </div>
+            <div class="mx-1">
+              <input
+                type="checkbox"
+                class="btn-check"
+                id="telugu"
+                name="telugu"
+                [(ngModel)]="languages.telugu"
+              />
+              <label
+                class="btn btn-primary btn-sm"
+                for="telugu"
+                [ngClass]="{ 'border-warning bg-warning': languages.telugu }"
+                >Telugu</label
+              >
+            </div>
+          </form>
+        </mat-expansion-panel>
+        <mat-expansion-panel class="rounded my-1">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Genre </mat-panel-title>
+            <mat-panel-description
+              class="text-end d-inline-block clear-filter pe-cursor"
+              (click)="clearLanguageGenre()"
+              >Clear</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <!-- <p
+            class="text-end clear-filter pe-cursor"
+            (click)="clearLanguageGenre()"
+          >
+            clear
+          </p> -->
+        </mat-expansion-panel>
+        <mat-expansion-panel class="rounded my-1">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Format </mat-panel-title>
+            <mat-panel-description
+              class="text-end d-inline-block clear-filter pe-cursor"
+              (click)="clearLanguageGenre()"
+              >Clear</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <!-- <p
+            class="text-end clear-filter pe-cursor"
+            (click)="clearLanguageGenre()"
+          >
+            clear
+          </p> -->
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+  <div class="col-8 movies">
+    <div class="now-showing">
+      <mat-toolbar color="primary" class="rounded">
+        <span>Now Showing </span>
+        <span class="example-spacer"></span>
+      </mat-toolbar>
+      <div class="now-showing-movies my-4">
+        <div class="card-group justify-content-around">
+          <div
+            class="col-3 mx-2 mb-2"
+            *ngFor="let showing of [1, 2, 3, 4, 5, 6]"
+          >
+            <!-- <img src="..." class="card-img-top" alt="..."> -->
+            <div class="image-card postion-relative rounded-5 overflow-hidden">
+              <svg
+                class="bd-placeholder-img card-img-top"
+                width="100%"
+                height="350"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Placeholder: Thumbnail"
+                preserveAspectRatio="xMidYMid slice"
+                focusable="false"
+              >
+                <title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#55595c"></rect>
+              </svg>
+              <div
+                class="image-release postion-absolute bottom-0 start-0 bg-dark text-white w-100 text-center py-2"
+              >
+                May 2021
+              </div>
+            </div>
+            <div class="card-body">
+              <h2 class="card-title fs-4 mb-0">Card title</h2>
+              <h3 class="card-text text-muted">
+                This is a wider card with supporting
+              </h3>
+              <p class="card-text">
+                <small class="text-muted">Last updated 3 mins ago</small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="up-comming">
+      <mat-toolbar color="accent" class="rounded">
+        <span>Up Comming</span>
+        <span class="example-spacer"></span>
+      </mat-toolbar>
+      <div class="up-comming-movies my-4">
+        <div class="card-group justify-content-around">
+          <div class="col-3 mx-2" *ngFor="let up_comming of [1, 2, 3, 4, 5, 6]">
+            <!-- <img src="..." class="card-img-top" alt="..."> -->
+            <div class="image-card postion-relative rounded-5 overflow-hidden">
+              <svg
+                class="bd-placeholder-img card-img-top"
+                width="100%"
+                height="350"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Placeholder: Thumbnail"
+                preserveAspectRatio="xMidYMid slice"
+                focusable="false"
+              >
+                <title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#55595c"></rect>
+              </svg>
+              <div
+                class="image-release postion-absolute bottom-0 start-0 bg-dark text-white w-100 text-center py-2"
+              >
+                May 2021
+              </div>
+            </div>
+            <div class="card-body">
+              <h2 class="card-title fs-4 mb-0">Card title</h2>
+              <h3 class="card-text text-muted">
+                This is a wider card with supporting
+              </h3>
+              <p class="card-text">
+                <small class="text-muted">Last updated 3 mins ago</small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
