@@ -1,0 +1,45 @@
+.poster-wrapper {
+  background-color: rgb(34, 34, 34);
+}
+.movie-banner {
+  min-height: 480px;
+  width: 92%;
+  padding: 32px 0px;
+  box-sizing: border-box;
+  align-items: center;
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-color: rgb(34, 34, 34);
+  margin: 0px auto;
+  max-width: 1440px;
+}
+.movie-poster {
+  align-items: center;
+  max-width: 1240px;
+  margin: 0px auto;
+  position: relative;
+  width: 100%;
+  background: transparent;
+}
+.movie-image {
+  height: 430px;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+}
+.movie-image img {
+  object-fit: cover;
+}
+.movie-details {
+  background: transparent;
+}
+.movie-cast .cast .image,
+.movie-crew .crew .image {
+  max-width: 120px;
+  min-width: 120px;
+  min-height: 120px;
+  max-height: 120px;
+  overflow: hidden;
+}

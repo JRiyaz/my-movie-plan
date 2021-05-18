@@ -1,0 +1,117 @@
+<div class="movie-section">
+  <div class="position-relative poster-wrapper p-3">
+    <div
+      class="movie-banner"
+      style="
+        background-image: linear-gradient(
+            90deg,
+            rgb(34, 34, 34) 24.97%,
+            rgb(34, 34, 34) 38.3%,
+            rgba(34, 34, 34, 0.04) 97.47%,
+            rgb(34, 34, 34) 100%
+          ),
+          url(https://in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/radhe-et00115114-25-03-2021-07-22-45.jpg);
+      "
+    >
+      <div class="movie-poster d-flex">
+        <div class="movie-image col-lg-3 col-md-6 col-sm-10 rounded-5">
+          <img
+            src="https://in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/radhe-et00115114-25-03-2021-07-22-45.jpg"
+            alt="Radhe: Your Most Wanted Bhai"
+            width="100%"
+            height="100%"
+          />
+          <div
+            class="movie-release position-absolute bottom-0 start-0 py-2 w-100 bg-white text-center"
+          >
+            Releasing On 13th May 2021
+          </div>
+        </div>
+        <div class="movie-details text-white mx-3 px-3 col-lg-5 col-sm-12">
+          <div class="movie-title mb-lg-5 fs-lg-1">
+            <h1>Radhe: Your Most Wanted Bhai</h1>
+          </div>
+          <div class="movie-format my-3">
+            <button class="btn btn-light btn-sm diabled mx-1">2D</button>
+            <button class="btn btn-light btn-sm diabled mx-1">Hindi</button>
+          </div>
+          <div class="movie-duration my-3">
+            <p class="lead">1h 54m . Action, Drama . UA</p>
+          </div>
+          <div class="links mt-4 align-self-end">
+            <a
+              mat-raised-button
+              color="accent"
+              class="me-2"
+              (click)="openBottomSheet()"
+              >Add To Booking</a
+            >
+            <a
+              mat-raised-button
+              color="primary"
+              routerLink="/wallet/1"
+              class="ms-2"
+              >Book Now</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-movie text-dark p-4">
+    <h2>About the Movie</h2>
+    <p class="lead">
+      Radhe, an encounter specialist of the Mumbai Police, vows to destroy the
+      crime syndicate led by a drug kingpin.
+    </p>
+  </div>
+  <!-- <nav class="px-4 py-3 w-100 shadow-sm bg-white text-dark">
+    <h1>Radhe: Your most wanted Bhai</h1>
+    <p class="lead">Action, Drama</p>
+  </nav> -->
+
+  <div class="movie-cast ms-5 my-4">
+    <h1 class="fs-lg-2">Cast</h1>
+    <div class="d-flex">
+      <div class="cast text-center col-2">
+        <div class="image rounded-circle mx-auto mb-3">
+          <!-- class="style__Image-eykeme-1 dkwyqp" -->
+          <!-- style="border-radius: 60px; opacity: 1" -->
+          <img
+            alt="Salman Khan"
+            width="120px"
+            height="120px"
+            src="https://in.bmscdn.com/iedb/artist/images/website/poster/large/salman-khan-1991-12-09-2017-01-53-43.jpg"
+          />
+        </div>
+        <div class="cast-name">
+          <h5 class="fs-4">salman khan</h5>
+          <p>As Radhe</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="movie-crew ms-5 my-4 pb-5">
+    <h1 class="fs-lg-2">Crew</h1>
+    <div class="d-flex">
+      <div class="crew text-center col-2">
+        <div class="image rounded-circle mx-auto mb-3">
+          <!-- class="style__Image-eykeme-1 dkwyqp" -->
+          <!-- style="border-radius: 60px; opacity: 1" -->
+          <img
+            alt="Salman Khan"
+            width="120px"
+            height="120px"
+            src="https://in.bmscdn.com/iedb/artist/images/website/poster/large/salman-khan-1991-12-09-2017-01-53-43.jpg"
+          />
+        </div>
+        <div class="cast-name">
+          <h5 class="fs-4">salman khan</h5>
+          <p>As Radhe</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
