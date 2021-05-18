@@ -1,0 +1,17 @@
+.poster {
+  background-color: lightcoral;
+}
+img {
+  opacity: 0.4;
+}
+
+.movie-name {
+  bottom: 5%;
+  right: 40%;
+  color: black !important;
+  text-transform: capitalize;
+}
+
+.wrapper {
+  width: 50%;
+}
