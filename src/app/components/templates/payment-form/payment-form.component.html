@@ -1,0 +1,71 @@
+<div class="wrapper">
+  <h1 class="text-center mb-3 p-2 rounded border border-2 shadow-sm">
+    Add Movie To Show
+  </h1>
+  <form [formGroup]="paymentForm" class="example-form p-4">
+    <mat-form-field appearance="outline" class="d-block w-100 text-dark">
+      <mat-label>Card Number</mat-label>
+      <input
+        matInput
+        formControlName="cardNumber"
+        type="tel"
+        #ccNumber
+        class="fs-3 bolder"
+        (keyup)="creditCardNumberSpacing()"
+      />
+      <mat-hint>16 digit card number</mat-hint>
+      <mat-error *ngIf="cardNumberErrors">{{ cardNumberErrors }}</mat-error>
+    </mat-form-field>
+
+    <div class="row g-0 justify-content-around">
+      <mat-form-field appearance="outline" class="d-block text-dark col-4 px-1">
+        <mat-label>Month</mat-label>
+        <mat-select formControlName="month">
+          <mat-option *ngFor="let month of months" [value]="month">
+            {{ month }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Select card expiry month</mat-hint>
+        <mat-error *ngIf="monthErrors">{{ monthErrors }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="d-block text-dark col-4 px-1">
+        <mat-label>Year</mat-label>
+        <mat-select formControlName="year">
+          <mat-option *ngFor="let year of years" [value]="year">
+            {{ year }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>select card expiry year</mat-hint>
+        <mat-error *ngIf="yearErrors">{{ yearErrors }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="d-block text-dark col-4 px-1">
+        <mat-label>CVV</mat-label>
+        <input
+          matInput
+          [type]="hide ? 'password' : 'text'"
+          formControlName="cvv"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="hide = !hide"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide"
+        >
+          <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+        <mat-error *ngIf="cvvErrors">{{ cvvErrors }}</mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+  <button mat-raised-button (click)="onCancel()" class="me-2">Cancel</button>
+  <button
+    mat-raised-button
+    (click)="onSubmit()"
+    [disabled]="!paymentForm.valid"
+    color="primary"
+    class="ms-2"
+  >
+    Pay &#8377;{{ amount }}
+  </button>
+</div>
