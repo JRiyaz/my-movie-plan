@@ -1,0 +1,299 @@
+<div class="form-container">
+  <div class="mx-auto text-center bg-color">
+    <div class="container py-5">
+      <h1 class="fs-2 text-dark py-5 text-uppercase">
+        Register New Auditorium Here
+      </h1>
+    </div>
+  </div>
+
+  <div class="form-holder border border-4 border-info rounded mx-5">
+    <form [formGroup]="auditoriumForm" (ngSubmit)="onSubmit()">
+      <mat-vertical-stepper [linear]="true" #stepper>
+        <mat-step [stepControl]="auditoriumForm">
+          <ng-template matStepLabel>Auditorium Details</ng-template>
+          <div class="row g-0 my-3 justify-content-around">
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Name</mat-label>
+                <input
+                  matInput
+                  placeholder="Auditorium Name"
+                  formControlName="name"
+                />
+                <mat-error *ngIf="nameErrors">{{ nameErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Image URL</mat-label>
+                <input
+                  matInput
+                  placeholder="Image Link"
+                  formControlName="image"
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Seating Capacity</mat-label>
+                <input matInput formControlName="seatCapacity" readonly />
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Email Id</mat-label>
+                <input
+                  matInput
+                  placeholder="Email Id"
+                  formControlName="email"
+                />
+                <mat-error *ngIf="emailErrors">{{ emailErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Customer Care Number</mat-label>
+                <input
+                  matInput
+                  placeholder="Cust Care No"
+                  formControlName="customerCare"
+                />
+                <mat-error *ngIf="customerCareErrors">{{
+                  customerCareErrors
+                }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Address</mat-label>
+                <input
+                  matInput
+                  placeholder="Address"
+                  formControlName="address"
+                />
+                <mat-error *ngIf="addressErrors">{{ addressErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="auditoriumForm.get('safeties')!" optional>
+          <ng-template matStepLabel>Add Safeties</ng-template>
+          <div class="row g-0 justify-content-around">
+            <div
+              class="col-sm-12 col-lg-5 form-field"
+              formArrayName="safeties"
+              *ngFor="let safety of safeties.controls; index as i"
+            >
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Safety</mat-label>
+                <input matInput placeholder="Hand Sanitizers Available" />
+                <mat-error *ngIf="safety.errors?.required && safeties.touched"
+                  >Safety Cannot be null</mat-error
+                >
+              </mat-form-field>
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeSafety(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Safety"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more safety"
+              aria-label="add_circle icon"
+              (click)="addSafety()"
+              >add_circle</mat-icon
+            >
+          </div>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="auditoriumForm.get('facilities')!" optional>
+          <ng-template matStepLabel>Add Facilities</ng-template>
+          <div class="row g-0 justify-content-around">
+            <div
+              class="col-sm-12 col-lg-5 form-field"
+              formArrayName="facilities"
+              *ngFor="let facility of facilities.controls; index as i"
+            >
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Facility</mat-label>
+                <input
+                  matInput
+                  placeholder="Parking Facility"
+                  [formControlName]="i"
+                />
+                <mat-error *ngIf="facilities.touched">
+                  <span *ngIf="facility.errors?.required"
+                    >Facility cannot be null</span
+                  >
+                  <span *ngIf="facility.errors?.uniqueName"
+                    >Facility already added</span
+                  >
+                </mat-error>
+              </mat-form-field>
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeFacility(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Facility"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more facility"
+              aria-label="add_circle icon"
+              (click)="addFacility()"
+              >add_circle</mat-icon
+            >
+          </div>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="auditoriumForm.get('shows')!" optional>
+          <ng-template matStepLabel>Add Shows</ng-template>
+          <div
+            class="w-100"
+            formArrayName="shows"
+            *ngFor="let show of shows.controls; index as i"
+          >
+            <div
+              class="
+                row
+                g-0
+                justify-content-around
+                align-content-center
+                form-field
+              "
+              [formGroupName]="i"
+            >
+              <div class="col-lg-5 col-sm-12">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Show Name</mat-label>
+                  <input matInput placeholder="Matnee" formControlName="name" />
+                  <mat-error *ngIf="shows.touched">
+                    <span *ngIf="show.get('name')?.errors?.required"
+                      >Show Name cannot be null</span
+                    >
+                    <span *ngIf="show.get('name')?.errors?.uniqueName"
+                      >Show Name already added</span
+                    >
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-5 col-sm-12">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Show Timing</mat-label>
+                  <input
+                    type="time"
+                    matInput
+                    placeholder="Matnee"
+                    formControlName="startTime"
+                  />
+                  <mat-error *ngIf="shows.touched">
+                    <span *ngIf="show.get('startTime')?.errors?.required">
+                      Show Start Time cannot be null</span
+                    >
+                    <span *ngIf="show.get('startTime')?.errors?.uniqueTime">
+                      Time gap between the shows must be at-least 3 hours</span
+                    >
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeShow(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Show"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more facility"
+              aria-label="add_circle icon"
+              (click)="addShow()"
+              >add_circle</mat-icon
+            >
+          </div>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step>
+          <ng-template matStepLabel>Review</ng-template>
+          <pre>
+            {{ auditoriumForm.value | json }}
+          </pre>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button class="text-success">Submit</button>
+          </div>
+        </mat-step>
+      </mat-vertical-stepper>
+    </form>
+  </div>
+</div>
