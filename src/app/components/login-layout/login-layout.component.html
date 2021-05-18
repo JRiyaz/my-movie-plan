@@ -1,0 +1,37 @@
+<div class="d-flex h-100 text-center text-white bg-dark cover-page mb-5">
+  <div class="cover-container d-flex w-100 p-3 mx-auto flex-column">
+    <header class="mb-5">
+      <div class="clearfix">
+        <h3 class="float-md-start mb-0 fs-4 text-md-center">{{ title }}</h3>
+        <nav
+          class="nav nav-masthead justify-content-center float-md-end mt-sm-3"
+        >
+          <a class="nav-link" aria-current="page" routerLink="/home">Home</a>
+          <a class="nav-link" routerLinkActive="active" routerLink="/user/login"
+            >Login</a
+          >
+          <a
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/user/register"
+            >Register</a
+          >
+          <a
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/user/forgot-password"
+            >Forgot Password</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<app-footer [fixed]="true"></app-footer>
+
+<!-- [fixed]="true"
+  bgColor="bg-white"
+  textColor="text-dark" -->

@@ -1,0 +1,190 @@
+<nav
+  *ngIf="router.url !== '/screen'"
+  id="nav-bar"
+  class="
+    navbar navbar-expand-lg navbar-dark
+    bg-show
+    text-white
+    px-lg-3
+    animate_animated animate__fadeInDown
+  "
+>
+  <div class="container-fluid">
+    <a mat-button class="navbar-brand ms-sm-3 fs-4" href="#">{{ title }}</a>
+    <button
+      class="navbar-toggler"
+      mat-icon-button
+      aria-label="Example icon-button with a menu"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-sm-center">
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            aria-current="page"
+            routerLinkActive="active"
+            routerLink="/home"
+            >Home</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/now-showing"
+            >Now Showing</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/up-comming"
+            >Up Comming</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/about"
+            >About</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/contact"
+            >Contact</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/add-auditorium"
+            >Auditorium</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/add-movie"
+            >Movie</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/screen"
+            >Screen</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/manage"
+            >Manage</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/payment"
+            >Payment</a
+          >
+        </li>
+        <li class="nav-item mx-lg-2 mx-md-auto">
+          <a
+            mat-button
+            class="nav-link"
+            routerLinkActive="active"
+            routerLink="/ticket"
+            >Ticket</a
+          >
+        </li>
+      </ul>
+      <div class="profile text-sm-center">
+        <button mat-button [matMenuTriggerFor]="menu">
+          <img
+            class="rounded-circle mx-2"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK9DmKOF9VCBqRzdHLzwyyOXjDm4kOYjD9IZQo2WviiLzzxDmzwYQZaVK6_7o_Qc7famc&usqp=CAU"
+            alt=""
+            width="45"
+            height="45"
+          />
+          My Account
+        </button>
+        <mat-menu #menu="matMenu">
+          <a routerLink="/user/login" mat-menu-item>Login</a>
+          <a routerLink="/user/register" mat-menu-item>Register</a>
+          <a routerLink="/user/forgot-password" mat-menu-item>
+            Forgot Password
+          </a>
+          <a routerLink="/user/profile" mat-menu-item>My Profile</a>
+          <a routerLink="/user/cart" mat-menu-item>My Cart</a>
+          <a routerLink="/user/bookings" mat-menu-item>My Bookings</a>
+          <a routerLink="/user/logout" mat-menu-item>Logout</a>
+        </mat-menu>
+        <!-- <ul class="navbar-nav col-auto">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle active"
+              href="#"
+              id="account-links"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <img
+                class="rounded-circle mx-2"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK9DmKOF9VCBqRzdHLzwyyOXjDm4kOYjD9IZQo2WviiLzzxDmzwYQZaVK6_7o_Qc7famc&usqp=CAU"
+                alt=""
+                width="45"
+                height="45"
+              />
+              <span>My Account</span>
+            </a>
+            <ul
+              class="dropdown-menu dropdown-menu-dark text-sm-center bg-white"
+              aria-labelledby="account-links"
+            >
+              <li>
+                <a class="dropdown-item py-1" href="#">Login</a>
+              </li>
+              <li>
+                <a class="dropdown-item py-1" href="#">Sign Up</a>
+              </li>
+              <li>
+                <a class="dropdown-item py-1" href="#">Forgot Password</a>
+              </li>
+            </ul>
+          </li>
+        </ul> -->
+      </div>
+    </div>
+  </div>
+</nav>

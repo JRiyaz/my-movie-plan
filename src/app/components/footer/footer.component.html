@@ -1,0 +1,24 @@
+<footer
+  *ngIf="router.url !== '/screen'"
+  class="row w-100 justify-content-around mx-0 footer"
+  [ngClass]="fixed ? 'fixed-bottom' : ''"
+>
+  <div
+    class="text-center text-white"
+    style="height: 50px; line-height: 50px"
+    [ngClass]="{
+      'bg-dark': !bgColor,
+      bgColor: bgColor,
+      'text-white': !textColor,
+      textColor: textColor
+    }"
+  >
+    Designed & Developed by
+    <a
+      href="https://jriyaz.github.io/Portfolio/"
+      target="_blank"
+      class="text-decoration-none mx-2"
+      ><strong>Riyaz J</strong></a
+    >
+  </div>
+</footer>
