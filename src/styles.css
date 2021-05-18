@@ -1,4 +1,56 @@
 /* You can add global styles to this file, and also import other style files */
 
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.bg-show {
+  background-color: #333545;
+}
+
+.text-show {
+  color: #333545;
+}
+
+.dropdown-menu-dark .dropdown-item {
+  color: #333545;
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+  color: #fff;
+  background-color: black;
+}
+
+.rounded-5 {
+  border-radius: 1.5rem;
+}
+
+.pe-cursor {
+  cursor: pointer;
+}
+
+.underline {
+  width: 30px;
+  height: 2px;
+  background: #c80910;
+  margin: 20px 5px;
+}
+.h-100vh {
+  height: 100vh;
+}
+
+.h-90vh {
+  height: 90vh;
+}
+
+.h-70vh {
+  height: 70vh;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
