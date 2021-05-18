@@ -1,0 +1,112 @@
+<mat-card>
+  <!-- <form [formGroup]="ticketsForm">
+    <mat-horizontal-stepper [linear]="true" labelPosition="bottom" #stepper>
+      <mat-step [stepControl]="ticketsForm.get('auditorium')!">
+        <ng-template matStepLabel>Select the Cinema Hall</ng-template>
+        <mat-form-field class="d-block w-100 mt-2">
+          <mat-label>Cinema Hall Name</mat-label>
+          <mat-select class="text-dark" formControlName="auditorium">
+            <mat-option *ngFor="let audi of data" [value]="audi.name">
+              {{ audi.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="auditoriumErrors">{{ auditoriumErrors }}</mat-error>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext (click)="onAuditoriumSelect()">
+            Next
+          </button>
+        </div>
+      </mat-step>
+      <mat-step
+        [stepControl]="ticketsForm.get('time')!"
+        label="Select the timing"
+      >
+        <mat-form-field class="d-block w-100 mt-2">
+          <mat-label class="text-dark">Show Timing</mat-label>
+          <mat-select class="text-dark" formControlName="time">
+            <mat-option *ngFor="let timing of tempShows" [value]="timing.time">
+              {{ timing.time }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="timingErrors">{{ timingErrors }}</mat-error>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext (click)="onTimingSelect()">
+            Next
+          </button>
+        </div>
+      </mat-step>
+      <mat-step
+        [stepControl]="ticketsForm.get('seat')!"
+        label="Select No.of seats"
+      >
+        <div
+          class="col-12 my-4 text-center"
+          [ngClass]="getSeats > 0 ? 'text-primary' : 'text-danger'"
+        >
+          <mat-icon
+            class="fs-1"
+            aria-hidden="false"
+            aria-label="Example home icon"
+          >
+            {{ icon }}
+          </mat-icon>
+        </div>
+        <div *ngIf="getSeats < 1" class="text-center text-danger">
+          No Seats avaliable, please select different show timing
+        </div>
+        <div *ngIf="getSeats > 0" class="row g-0 justify-content-around mb-4">
+          <div class="col-auto mx-2" *ngFor="let seat of tempSeats">
+            <input
+              type="radio"
+              class="btn-check"
+              formControlName="seat"
+              [id]="seat"
+              [value]="seat"
+            />
+            <label
+              [for]="seat"
+              class="px-3 py-2 rounded-circle border border-4 pe-cursor fs-5"
+              [ngClass]="
+                seat == getSeats
+                  ? 'text-success, border-success'
+                  : 'text-warning, border-secondary'
+              "
+            >
+              {{ seat }}
+            </label>
+          </div>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext [disabled]="getSeats < 1">
+            next
+          </button>
+        </div>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Review</ng-template>
+        <table class="table table-striped">
+          <tr>
+            <th scope="col">Auditorium</th>
+            <td>{{ tempAuditorium }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Timing</th>
+            <td>{{ tempTime }}</td>
+          </tr>
+          <tr>
+            <th scope="col">Seats</th>
+            <td>{{ getSeats }}</td>
+          </tr>
+        </table>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="proceed()">Proceed</button>
+        </div>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </form> -->
+</mat-card>
