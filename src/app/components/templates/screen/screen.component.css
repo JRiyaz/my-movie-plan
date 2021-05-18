@@ -1,0 +1,12 @@
+.screen-container {
+  height: 100%;
+}
+body,
+header {
+  background-color: #212529 !important;
+  margin: 0px !important;
+}
+
+.text-white.text-danger {
+  color: red !important;
+}
