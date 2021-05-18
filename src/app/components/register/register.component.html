@@ -1,0 +1,111 @@
+<main class="px-3 my-auto">
+  <p class="lead alert-danger mb-2 p-2 rounded">Cover is a one-page</p>
+  <h1 class="fs-2 py-4">Register Here</h1>
+
+  <div class="example-container">
+    <form
+      action="#"
+      class="row w-100 g-0"
+      [formGroup]="registerForm"
+      (onsubmit)="onSubmit()"
+    >
+      <!-- Email Field -->
+      <div class="col-12 mb-2 px-lg-1">
+        <mat-form-field appearance="outline" class="d-block text-white">
+          <mat-label>Enter your Email</mat-label>
+          <input
+            matInput
+            type="email"
+            placeholder="nms@cinemas.com"
+            formControlName="email"
+            class="fs-5"
+          />
+          <mat-hint *ngIf="email.pending" class="text-white"
+            >Checking For uniqueness...</mat-hint
+          >
+          <mat-error *ngIf="emailErrors">{{ emailErrors }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-6 mb-2 px-lg-1">
+        <mat-form-field appearance="outline" class="d-block text-white">
+          <mat-label>Enter your name</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Your Name"
+            formControlName="name"
+            class="fs-5"
+          />
+          <mat-error *ngIf="nameErrors">{{ nameErrors }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-6 mb-2 px-lg-1">
+        <mat-form-field appearance="outline" class="d-block text-white">
+          <mat-label>Enter your Mobile</mat-label>
+          <span matPrefix>+91 &nbsp;</span>
+          <input
+            matInput
+            type="text"
+            placeholder="9876543210"
+            formControlName="mobile"
+            class="fs-5"
+          /><mat-hint *ngIf="mobile.pending" class="text-white"
+            >Checking For uniqueness...</mat-hint
+          >
+          <mat-error *ngIf="mobileErrors">{{ mobileErrors }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-6 mb-2 px-lg-1">
+        <mat-form-field appearance="outline" class="d-block text-white">
+          <mat-label>Enter your password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            class="fs-5"
+          />
+          <mat-error *ngIf="passwordErrors">{{ passwordErrors }}</mat-error>
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword"
+          >
+            <mat-icon>{{
+              hidePassword ? "visibility_off" : "visibility"
+            }}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-12 col-md-12 col-lg-6 mb-2 px-lg-1">
+        <mat-form-field appearance="outline" class="d-block text-white">
+          <mat-label>Select Gender</mat-label>
+          <mat-select formControlName="gender" class="text-white fs-5">
+            <mat-option *ngFor="let sex of genders" [value]="sex.name">
+              {{ sex.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="passwordErrors">{{ passwordErrors }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-lg-12 col-md-12 mb-2">
+        <mat-checkbox class="example-margin" formControlName="terms"
+          >Agree to terms & conditions</mat-checkbox
+        >
+        <mat-error *ngIf="termsErrors">{{ termsErrors }}</mat-error>
+      </div>
+
+      <button mat-raised-button color="primary" class="col-12" type="submit">
+        Register
+      </button>
+    </form>
+  </div>
+
+  {{ registerForm.value }}
+</main>
