@@ -1,0 +1,486 @@
+<div class="form-container">
+  <div class="mx-auto text-center bg-color">
+    <div class="container py-5">
+      <h1 class="fs-2 text-dark py-5 text-uppercase">Add New Movie</h1>
+    </div>
+  </div>
+
+  <div class="form-holder border border-4 border-warning rounded mx-5">
+    <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
+      <mat-horizontal-stepper [linear]="true" #stepper>
+        <mat-step
+          [stepControl]="validMovieDetails"
+          errorMessage="Movie details required"
+        >
+          <ng-template matStepLabel>Movie Details</ng-template>
+          <div class="row g-0 my-3 justify-content-around">
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Name</mat-label>
+                <input
+                  matInput
+                  placeholder="Movie Name"
+                  formControlName="name"
+                />
+                <mat-error *ngIf="nameErrors">{{ nameErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Release Date</mat-label>
+                <input
+                  matInput
+                  [min]="todayDate"
+                  [matDatepicker]="picker"
+                  placeholder="Release Date"
+                  formControlName="release"
+                />
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-error *ngIf="releaseErrors">{{ releaseErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Image URL</mat-label>
+                <input
+                  matInput
+                  placeholder="Image Link"
+                  formControlName="image"
+                />
+                <mat-error *ngIf="imageErrors">{{ imageErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Background Image URL</mat-label>
+                <input
+                  matInput
+                  placeholder="Background Image Link"
+                  formControlName="bgImage"
+                />
+                <mat-error *ngIf="bgImageErrors">{{ bgImageErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Duration</mat-label>
+                <input
+                  matInput
+                  placeholder="2h 25m"
+                  formControlName="duration"
+                />
+                <mat-error *ngIf="durationErrors">{{
+                  durationErrors
+                }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-5 mx-lg-2">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Rating</mat-label>
+                <input
+                  type="number"
+                  matInput
+                  placeholder="4.5"
+                  formControlName="rating"
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="col-sm-12 col-lg-11">
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Story</mat-label>
+                <textarea
+                  matInput
+                  formControlName="story"
+                  placeholder="Narrate the story here"
+                ></textarea>
+                <mat-error *ngIf="storyErrors">{{ storyErrors }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div>
+            <button
+              mat-button
+              matStepperNext
+              type="button"
+              [disabled]="!validMovieDetails.valid"
+            >
+              Next
+            </button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="movieForm.get('genreField')!">
+          <ng-template matStepLabel>Add Genres</ng-template>
+
+          <div class="col-12 my-4 px-sm-1 px xl-4">
+            <mat-form-field
+              class="example-chip-list"
+              class="d-block w-100 text-dark"
+            >
+              <mat-label>Add Genres</mat-label>
+              <mat-chip-list #genreList aria-label="Genre selection">
+                <mat-chip
+                  *ngFor="let genre of genres"
+                  [selectable]="true"
+                  [removable]="true"
+                  (removed)="removeGenre(genre)"
+                >
+                  {{ genre }}
+                  <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+                </mat-chip>
+                <input
+                  placeholder="New Genre..."
+                  #genreInput
+                  [formControl]="genreField"
+                  [matAutocomplete]="auto"
+                  [matChipInputFor]="genreList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addGenre($event)"
+                />
+                <mat-error
+                  *ngIf="movieForm.get('genreField')?.hasError('required')"
+                  >Language cannot be empty</mat-error
+                >
+              </mat-chip-list>
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                (optionSelected)="selectedGenre($event)"
+              >
+                <mat-option
+                  *ngFor="let genre of filteredGenres | async"
+                  [value]="genre"
+                >
+                  {{ genre }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          <!-- <div class="row g-0 justify-content-around">
+            <div
+              class="col-sm-12 col-lg-5 form-field"
+              formArrayName="genres"
+              *ngFor="let genre of genres.controls; index as i"
+            >
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Genre</mat-label>
+                <input matInput placeholder="Romantic" [formControlName]="i" />
+                <mat-error *ngIf="genre.errors?.required && genres.touched"
+                  >Genre Cannot be empty</mat-error
+                >
+              </mat-form-field>
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeGenre(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Genre"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more Genre"
+              aria-label="add_circle icon"
+              (click)="addGenre()"
+              >add_circle</mat-icon
+            >
+          </div> -->
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="movieForm.get('languages')!">
+          <ng-template matStepLabel>Add Language</ng-template>
+          <div class="row g-0 justify-content-around">
+            <div
+              class="col-sm-12 col-lg-5 form-field"
+              formArrayName="languages"
+              *ngFor="let language of languages.controls; index as i"
+            >
+              <mat-form-field
+                class="d-block w-100 text-dark"
+                appearance="outline"
+              >
+                <mat-label>Language</mat-label>
+                <input matInput placeholder="English" [formControlName]="i" />
+                <mat-error
+                  *ngIf="language.errors?.required && languages.touched"
+                  >Language cannot be empty</mat-error
+                >
+              </mat-form-field>
+
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeLanguage(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Language"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more Language"
+              aria-label="add_circle icon"
+              (click)="addLanguage()"
+              >add_circle</mat-icon
+            >
+          </div>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="movieForm.get('casts')!">
+          <ng-template matStepLabel>Add Cast Details</ng-template>
+          <div
+            class="w-100"
+            formArrayName="casts"
+            *ngFor="let cast of casts.controls; index as i"
+          >
+            <div
+              class="
+                row
+                g-0
+                justify-content-around
+                align-content-center
+                form-field
+              "
+              [formGroupName]="i"
+            >
+              <div class="col-lg-3 col-sm-6">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Actor Name</mat-label>
+                  <input
+                    matInput
+                    placeholder="Actor Name"
+                    formControlName="name"
+                  />
+                  <mat-error
+                    *ngIf="cast.get('name')?.errors?.required && cast.touched"
+                  >
+                    Name cannot be empty
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Actor Role</mat-label>
+                  <input matInput placeholder="Hero" formControlName="role" />
+                  <mat-error
+                    *ngIf="cast.get('role')?.errors?.required && cast.touched"
+                  >
+                    Actor role cannot be empty
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Actor Image</mat-label>
+                  <input
+                    matInput
+                    placeholder="Actor image"
+                    formControlName="image"
+                  />
+                  <mat-error
+                    *ngIf="cast.get('image')?.errors?.required && cast.touched"
+                  >
+                    Actor image cannot be empty
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeCast(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Cast"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more Cast"
+              aria-label="add_circle icon"
+              (click)="addCast()"
+              >add_circle</mat-icon
+            >
+          </div>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step [stepControl]="movieForm.get('crews')!">
+          <ng-template matStepLabel>Add Crew Details</ng-template>
+          <div
+            class="w-100"
+            formArrayName="crews"
+            *ngFor="let crew of crews.controls; index as i"
+          >
+            <div
+              class="
+                row
+                g-0
+                justify-content-around
+                align-content-center
+                form-field
+              "
+              [formGroupName]="i"
+            >
+              <div class="col-lg-3 col-sm-6">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Crew Name</mat-label>
+                  <input
+                    matInput
+                    placeholder="Crew Name"
+                    formControlName="name"
+                  />
+                  <mat-error
+                    *ngIf="crew.get('name')?.errors?.required && crew.touched"
+                  >
+                    Name cannot be empty
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Crew Role</mat-label>
+                  <input
+                    matInput
+                    placeholder="Director"
+                    formControlName="role"
+                  />
+                  <mat-error
+                    *ngIf="crew.get('role')?.errors?.required && crew.touched"
+                  >
+                    Crew role cannot be empty
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <mat-form-field
+                  class="d-block w-100 text-dark"
+                  appearance="outline"
+                >
+                  <mat-label>Crew Image</mat-label>
+                  <input
+                    matInput
+                    placeholder="Crew image"
+                    formControlName="image"
+                  />
+                  <mat-error
+                    *ngIf="crew.get('image')?.errors?.required && crew.touched"
+                  >
+                    Crew image cannot be empty
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <mat-icon
+                class="fs-2 w-auto text-danger delete-icon"
+                (click)="removeCrew(i)"
+                aria-hidden="false"
+                matTooltip="Remove the Cast"
+                aria-label="delete icon"
+                >delete</mat-icon
+              >
+            </div>
+          </div>
+          <div class="text-center text-primary mt-4">
+            <mat-icon
+              class="pe-cursor fs-2"
+              aria-hidden="false"
+              matTooltip="Add one more Cast"
+              aria-label="add_circle icon"
+              (click)="addCrew()"
+              >add_circle</mat-icon
+            >
+          </div>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </mat-step>
+
+        <mat-step>
+          <ng-template matStepLabel>Review</ng-template>
+          <pre>
+              {{ movieForm.value | json }}
+            </pre
+          >
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button class="text-success">Submit</button>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </form>
+  </div>
+</div>
