@@ -1,21 +1,37 @@
 export interface Application {
 }
 
+export interface User {
+    id?: string;
+    name: string;
+    email: string;
+    mobile: string;
+    gender: string;
+    terms: boolean;
+    password: string;
+    userRole: string;
+}
+
+export interface Credentials {
+    username: string;
+    password: string;
+}
+
 export interface Movie {
     id?: number;
     name: string;
     image?: string;
     bgImage?: string;
-    addedOn?: Date;
-    rating?: string;
-    release?: Date;
-    generes?: string[];
-    languages?: string[];
     year?: string;
     story?: string;
     duration?: string;
-    casts?: Cast[];
-    crews?: Cast[];
+    addedOn?: Date;
+    rating?: string;
+    release?: Date;
+    genres?: string[];
+    languages?: string[];
+    casts?: Actor[];
+    crews?: Actor[];
 }
 
 export interface Auditorium {
@@ -24,8 +40,8 @@ export interface Auditorium {
     image?: string;
     email?: string;
     address?: string;
-    cutomerCare?: string;
-    seatCapacity?: string;
+    customerCareNo?: string;
+    seatCapacity?: number;
     facilities?: string[];
     safeties?: string[];
     shows: Show[];
@@ -35,30 +51,28 @@ export interface Show {
     id?: number;
     name: string;
     startTime: string;
-    prices?: Price;
     movieShows?: MovieShow[];
-    bookings?: Booking[];
 }
 
 export interface MovieShow {
     id?: number;
-    showId?: number;
-    movieId?: number;
-    from?: Date;
-    to?: Date;
+    start?: Date;
+    end?: Date;
+    avalibleSeats?: number;     // Add this field in backend
+    movie?: Movie;              // Need movie, add this in backed
+    bookings?: Booking[];
+    price?: Price;
 }
 
 export interface Booking {
     id?: number;
-    showId?: number;
-    movieId?: number;
-    userId?: number;
-    seatNumbers?: string[];
     amount?: number;
     totalSeats?: number;
     dateOfBooking?: Date;
     status?: boolean;
-    paymentId?: Payment;
+    seatNumbers?: string[];
+    user?: User;                 // Need user, add this in backed
+    payment?: Payment;
 }
 
 export interface Price {
@@ -71,24 +85,43 @@ export interface Price {
 export interface Payment {
     id?: number;
     amount: number;
-    date: Date;
-    bookingId: number;
+    paymentDate: Date;
     cardNumber: string;
     cardExpiryMonth: string;
     cardExpiryYear: string;
     cardCVV: string;
 }
 
-export interface Cast {
+export interface Actor {
     id?: number;
     name: string;
     role: string;
     image: string;
 }
 
-export interface ShowMovie {
+export interface TempAddMovieToShow {
     movieId: number;
-    from: Date,
-    to: Date,
-    prices: Price,
+    start: Date,
+    end: Date,
+    price: Price,
+}
+
+export interface TempSelectMembers {
+    auditoriumId: number;
+    showId: number;
+    seats: number;
+}
+
+export interface TempScreen {
+    auditoriumId: number;
+    showId: number;
+    selectedSeats: Set<string>;
+    amount: number;
+}
+
+export interface TempAuditoriumShowSelectedForSeatBooking {
+    auditoriumId: number;
+    showId: number;
+    noOfSeats: number;
+    alreadySelectedSeats: string[];
 }

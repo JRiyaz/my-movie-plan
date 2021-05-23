@@ -37,7 +37,7 @@ const routes: Routes = [
       { path: 'manage', component: ManageComponent },
       { path: 'show', component: AddMovieToShowFormComponent },
       { path: 'payment', component: PaymentFormComponent },
-      { path: 'ticket', component: TicketComponent },
+      { path: 'ticket', component: TicketComponent }
     ]
   },
   {
