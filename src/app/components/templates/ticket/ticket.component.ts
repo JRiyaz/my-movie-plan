@@ -7,12 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TicketComponent implements OnInit {
 
+  status!: boolean;
+
   constructor() { }
 
   ngOnInit(): void {
     // this.status = true;
   }
-
-  status!: boolean;
-
 }

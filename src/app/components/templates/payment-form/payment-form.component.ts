@@ -24,29 +24,33 @@ export class PaymentFormComponent implements OnInit {
   @ViewChild('ccNumber') ccNumberField!: ElementRef;
 
   paymentForm!: FormGroup;
-  hide: boolean = true;
-  months: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  years: number[] = [];
-  amount!: number;
 
-  constructor(private fb: FormBuilder,
-    public dialog: MatDialogRef<PaymentFormComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: any) {
-    this.dialog.disableClose = true;
+  cvvHide: boolean = true;
+
+  tempMonths: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  tempYears!: number[];
+
+  amountToBePaid!: number;
+
+  constructor(private _fb: FormBuilder,
+    public _dialog: MatDialogRef<PaymentFormComponent>,
+    @Inject(MAT_DIALOG_DATA) private _data: any) {
+    this._dialog.disableClose = true;
   }
 
   ngOnInit(): void {
-    this.paymentForm = this.fb.group({
+    this.paymentForm = this._fb.group({
       cardNumber: new FormControl('', [Validators.required, Validators.pattern('^[ 0-9]*$'), Validators.minLength(17)]),
-      month: new FormControl('', Validators.required),
-      year: new FormControl('', Validators.required),
-      cvv: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{3}$')])
+      cardExpiryMonth: new FormControl('', Validators.required),
+      cardExpiryYear: new FormControl('', Validators.required),
+      cardCVV: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{3}$')])
     });
 
-    let year = new Date().getFullYear();
-    [...Array(9).keys()].forEach(num => this.years.push(year + num));
+    const year = new Date().getFullYear();
+    [...Array(9).keys()].forEach(num => this.tempYears.push(year + num));
 
-    this.amount = this.data.amount;
+    this.amountToBePaid = this._data.amount;
   }
 
   get cardNumberErrors(): string {
@@ -59,17 +63,17 @@ export class PaymentFormComponent implements OnInit {
   }
 
   get monthErrors(): string {
-    let month = this.paymentForm.get('month');
+    let month = this.paymentForm.get('cardExpiryMonth');
     return month?.hasError('required') ? 'Month cannot be empty' : '';
   }
 
   get yearErrors(): string {
-    let year = this.paymentForm.get('year');
+    let year = this.paymentForm.get('cardExpiryYear');
     return year?.hasError('required') ? 'Year cannot be empty' : '';
   }
 
   get cvvErrors(): string {
-    let cvv = this.paymentForm.get('cvv');
+    let cvv = this.paymentForm.get('cardCVV');
     if (cvv?.hasError('required'))
       return 'CVV Number cannot be empty';
     else if (cvv?.hasError('pattern'))
@@ -111,12 +115,11 @@ export class PaymentFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.dialog.close();
+    this._dialog.close();
   }
 
   onSubmit(): void {
-    console.log(this.paymentForm.value);
-    // this.dialog.close({ payment: this.selectedMovie });
+    this._dialog.close({ payment: this.paymentForm.value });
   }
 
 }

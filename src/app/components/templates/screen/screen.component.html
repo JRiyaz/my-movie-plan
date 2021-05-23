@@ -28,15 +28,17 @@
       <div class="col-3 text-center">
         <div>
           Total Cost: &nbsp;
-          <span class="lead">{{ price }}</span>
+          <span class="lead">{{ totalAmount }}</span>
         </div>
       </div>
 
       <div class="col-3 text-center">
         <button
+          color="primary"
           mat-raised-button
           type="submit"
           [disabled]="seatsToBeSelected != 0"
+          (click)="onProceed()"
         >
           Proceed
         </button>
@@ -48,18 +50,23 @@
     >
       <mat-card class="bg-dark text-white text-center p-sm-0">
         <mat-list class="bg-dark text-white p-sm-0">
-          <ng-container *ngFor="let item of alphabets.reverse(); index as i">
+          <ng-container
+            *ngFor="let item of tempSeatColumns.reverse(); index as i"
+          >
             <h3 class="text-danger m-1" *ngIf="i == 7">
-              EXECUTIVE &#8377;200.00
+              <!-- EXECUTIVE &#8377;200.00 -->
+              EXECUTIVE {{ "200.00" | currency: "INR" }}
             </h3>
             <h3 class="text-danger m-1" *ngIf="i == 3">
-              PREMIUM &#8377;300.00
+              SILVER {{ "300.00" | currency: "INR" }}
             </h3>
-            <h3 class="text-danger m-1" *ngIf="i == 0">GOLD &#8377;350.00</h3>
+            <h3 class="text-danger m-1" *ngIf="i == 0">
+              GOLD {{ "350.00" | currency: "INR" }}
+            </h3>
             <mat-list-item class="justify-content-around py-1 h-auto px-sm-0">
               <div class="col-1 text-info fs-3 px-sm-0">{{ item }}</div>
               <div class="col-sm-11 col-lg-10 px-sm-0">
-                <ng-container *ngFor="let seat of seats; index as i">
+                <ng-container *ngFor="let seat of tempSeatRows; index as i">
                   <div
                     class="me-sm-1 mx-lg-4 d-inline"
                     *ngIf="i == 3 || i == 11"

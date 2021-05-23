@@ -12,12 +12,15 @@ export class HeaderComponent implements OnInit {
 
   title: string = GlobalConstants.APP_NAME;
 
-  // constructor(@Inject(DOCUMENT) document: any) { }
-  constructor(public router: Router) { }
+  router!: Router;
+
+  constructor(private _router: Router) { }
 
   ngOnInit(): void {
+    this.router = this._router;
   }
 
+  // constructor(@Inject(DOCUMENT) document: any) { }
   // @HostListener('window:scroll', ['$event'])
   // onWindowScroll(e: any): void {
   //   let element = document.getElementById('nav-bar');

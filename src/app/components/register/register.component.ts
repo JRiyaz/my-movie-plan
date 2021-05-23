@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UserValidator } from 'src/app/classes/validator/user-validator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { UserValidator } from 'src/app/classes/validators/user-validator';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -19,11 +22,15 @@ export class RegisterComponent implements OnInit {
     { name: 'Female', selected: false }
   ]
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private _fb: FormBuilder,
+    private _auth: AuthService,
+    private _bar: MatSnackBar,
+    private _router: Router,
+    private _validator: UserValidator) { }
 
   ngOnInit(): void {
 
-    this.registerForm = this.fb.group({
+    this.registerForm = this._fb.group({
       name: new FormControl('', [
         Validators.required,
         Validators.minLength(4),
@@ -31,12 +38,11 @@ export class RegisterComponent implements OnInit {
         Validators.pattern('^[a-zA-Z ]+$')
       ]),
       email: new FormControl('', [
-        // RegisterValidator.required,
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(20),
         Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-      ], UserValidator.uniqueEmail),
+      ], this._validator.uniqueEmail),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(4),
@@ -48,7 +54,7 @@ export class RegisterComponent implements OnInit {
         Validators.minLength(10),
         Validators.maxLength(10),
         Validators.pattern('^[0-9]{10}$')
-      ], UserValidator.uniqueMobile),
+      ], this._validator.uniqueMobile),
       gender: new FormControl('Male', [
         Validators.required,
         Validators.minLength(4),
@@ -119,11 +125,6 @@ export class RegisterComponent implements OnInit {
     return '';
   }
 
-  onSubmit(): void {
-    console.log(this.registerForm);
-
-  }
-
   get email(): AbstractControl {
     return this.registerForm.get('email')!;
   }
@@ -132,13 +133,26 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('mobile')!;
   }
 
-  onGenderChange(event: any) {
-    let male = this.genders[0].selected;
-    let female = this.genders[1].selected;
+  onSubmit(): void {
+    let message;
+    this._auth.registerUser(this.registerForm.value)
+      .subscribe(
+        data => message = data,
+        err => console.log(err)
+      );
 
-    male = !male;
-    female = !female;
-    this.registerForm.get('gender')?.setValue(male ? this.genders[0].name : this.genders[1].name);
+    console.log(message);
+
+    if (message)
+      this._bar.open(message, 'Login', {
+        duration: 3000,
+        verticalPosition: 'bottom', // 'top' | 'bottom'
+        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
+        panelClass: ['red-snackbar'],
+      }
+      ).onAction().subscribe(
+        res => this._router.navigate(['./login'])
+      );
   }
 
 }

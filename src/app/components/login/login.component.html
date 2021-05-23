@@ -47,7 +47,13 @@
         </mat-form-field>
       </div>
 
-      <button mat-raised-button color="primary" class="col-12" type="submit">
+      <button
+        mat-raised-button
+        color="primary"
+        class="col-12"
+        type="submit"
+        [disabled]="!loginForm.valid"
+      >
         Login
       </button>
     </form>

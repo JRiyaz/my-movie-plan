@@ -140,7 +140,7 @@
           </div>
         </mat-step>
 
-        <mat-step [stepControl]="movieForm.get('genreField')!">
+        <mat-step [stepControl]="movieForm.get('genres')!">
           <ng-template matStepLabel>Add Genres</ng-template>
 
           <div class="col-12 my-4 px-sm-1 px xl-4">
@@ -162,15 +162,14 @@
                 <input
                   placeholder="New Genre..."
                   #genreInput
-                  [formControl]="genreField"
+                  formControlName="genres"
                   [matAutocomplete]="auto"
                   [matChipInputFor]="genreList"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                   (matChipInputTokenEnd)="addGenre($event)"
                 />
-                <mat-error
-                  *ngIf="movieForm.get('genreField')?.hasError('required')"
-                  >Language cannot be empty</mat-error
+                <mat-error *ngIf="movieForm.get('genres')?.hasError('required')"
+                  >Genre cannot be empty</mat-error
                 >
               </mat-chip-list>
               <mat-autocomplete
@@ -477,7 +476,13 @@
           >
           <div>
             <button mat-button matStepperPrevious type="button">Back</button>
-            <button mat-button class="text-success">Submit</button>
+            <button
+              mat-button
+              class="text-success"
+              [disabled]="!movieForm.valid"
+            >
+              Submit
+            </button>
           </div>
         </mat-step>
       </mat-horizontal-stepper>

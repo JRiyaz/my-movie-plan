@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UserValidator } from 'src/app/classes/validator/user-validator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { UserValidator } from 'src/app/classes/validators/user-validator';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -14,18 +17,18 @@ export class ForgotPasswordComponent implements OnInit {
 
   forgotPasswordForm!: FormGroup;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private _fb: FormBuilder,
+    private _bar: MatSnackBar,
+    private _auth: AuthService,
+    private _router: Router,
+    private _validator: UserValidator) { }
 
   ngOnInit(): void {
-    this.forgotPasswordForm = this.fb.group({
+    this.forgotPasswordForm = this._fb.group({
       username: new FormControl('', [Validators.required, Validators.minLength(4)],
-        UserValidator.isEmailOrMobilePresent),
+        this._validator.isEmailOrMobilePresent),
       password: new FormControl('', [Validators.required, Validators.minLength(4)])
     })
-  }
-
-  onSubmit(): void {
-
   }
 
   get username(): AbstractControl {
@@ -38,14 +41,39 @@ export class ForgotPasswordComponent implements OnInit {
       return 'Username cannot be empty';
     else if (username?.hasError('present'))
       return "Username doesn't exists";
-    return username?.hasError('minlength') ? `Username should at-least be ${username?.errors?.minlength.requiredLength} characters` : '';
+    else if (username?.hasError('minlength'))
+      return `Username should at-least be ${username?.errors?.minlength.requiredLength} characters`
+    return '';
   }
 
   get passwordErrors(): String {
     const password = this.forgotPasswordForm.get('password');
     if (password?.hasError('required'))
       return 'Password cannot be empty';
-    return password?.hasError('minlength') ? `Password should at-least be ${password?.errors?.minlength.requiredLength} characters` : '';
+    else if (password?.hasError('minlength'))
+      return `Password should at-least be ${password?.errors?.minlength.requiredLength} characters`
+    return '';
   }
 
+  onSubmit(): void {
+    let message;
+    this._auth.registerUser(this.forgotPasswordForm.value)
+      .subscribe(
+        data => message = data,
+        err => console.log(err)
+      );
+
+    console.log(message);
+
+    if (message)
+      this._bar.open(message, 'Home', {
+        duration: 3000,
+        verticalPosition: 'bottom', // 'top' | 'bottom'
+        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
+        panelClass: ['red-snackbar'],
+      }
+      ).onAction().subscribe(
+        res => this._router.navigate(['./login'])
+      );
+  }
 }

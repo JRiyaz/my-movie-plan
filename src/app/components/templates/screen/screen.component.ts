@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TempScreen } from 'src/app/interfaces/application';
 
 @Component({
   selector: 'app-screen',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ScreenComponent implements OnInit {
 
-  alphabets: string[] = [
+  tempSeatColumns: string[] = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'
   ];
+
+  tempSeatRows!: number[];
 
   alreadySelectedSeats: Set<string> = new Set();
 
@@ -17,20 +20,18 @@ export class ScreenComponent implements OnInit {
 
   nowSelectedSeats: Set<string> = new Set();
 
-  seats!: number[];
-
-  price: number = 0;
+  totalAmount: number = 0;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.seats = [...Array(15).keys()].filter(num => num > 0);
-    let seats = this.alreadySelectedSeats;
-    seats.add('A6');
-    seats.add('B10');
-    seats.add('J3');
-    seats.add('J4');
-    seats.add('F8');
+    this.tempSeatRows = [...Array(9).keys()].filter(num => num > 0);
+    // let seats = this.alreadySelectedSeats;
+    // seats.add('A6');
+    // seats.add('B10');
+    // seats.add('J3');
+    // seats.add('J4');
+    // seats.add('F8');
   }
 
   addSeat(event: any): boolean {
@@ -40,11 +41,11 @@ export class ScreenComponent implements OnInit {
     const seats = this.nowSelectedSeats;
     if (seats.has(value) && seats.delete(value)) {
       if (value.startsWith('J') || value.startsWith('I') || value.startsWith('H'))
-        this.price -= 350;
+        this.totalAmount -= 350;
       else if (value.startsWith('A') || value.startsWith('B') || value.startsWith('C'))
-        this.price -= 200;
+        this.totalAmount -= 200;
       else
-        this.price -= 300;
+        this.totalAmount -= 300;
       this.seatsToBeSelected++;
       return false;
     }
@@ -53,11 +54,11 @@ export class ScreenComponent implements OnInit {
         return false;
       seats.add(value);
       if (value.startsWith('J') || value.startsWith('I') || value.startsWith('H'))
-        this.price += 350;
+        this.totalAmount += 350;
       else if (value.startsWith('A') || value.startsWith('B') || value.startsWith('C'))
-        this.price += 200;
+        this.totalAmount += 200;
       else
-        this.price += 300;
+        this.totalAmount += 300;
       this.seatsToBeSelected--;
       return true;
     }
@@ -73,5 +74,15 @@ export class ScreenComponent implements OnInit {
 
   toString(): string {
     return [...this.nowSelectedSeats].join(', ');
+  }
+
+  onProceed(): void {
+    const auditoriumShowBooking: TempScreen = {
+      auditoriumId: 1,  // Get this from tempApplicationService
+      showId: 1,        //Get this from tempApplicationService
+      amount: this.totalAmount,
+      selectedSeats: this.nowSelectedSeats
+    }
+    // Set the above "auditoriumShowBooking" to tempApplicationService for futher action
   }
 }

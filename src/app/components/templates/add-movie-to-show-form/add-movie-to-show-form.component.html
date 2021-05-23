@@ -18,6 +18,7 @@
           [value]="movie.id"
           class="h-auto py-1"
         >
+          <!-- (onSelectionChange)="onMovieChange($event, movie.id)" -->
           <img
             class="example-option-img me-2 rounded"
             aria-hidden
@@ -26,9 +27,13 @@
             width="120"
           />
           <span class="me-1">{{ movie.name }}</span> |
-          <small class="me-1">Release: {{ formatDate(movie.release) }}</small>
+          <small class="me-1"
+            >Release: {{ movie.release | date: "fullDate" }}</small
+          >
           |
-          <small class="me-1">Added: {{ formatDate(movie.addedOn) }}</small>
+          <small class="me-1"
+            >Added: {{ movie.addedOn | date: "fullDate" }}</small
+          >
         </mat-option>
       </mat-select>
       <mat-error *ngIf="movieIdErrors">{{ movieIdErrors }}</mat-error>
@@ -42,16 +47,16 @@
         [min]="startDate"
         [max]="endDate"
       >
-        <input matStartDate formControlName="from" placeholder="Start date" />
-        <input matEndDate formControlName="to" placeholder="End date" />
+        <input matStartDate formControlName="start" placeholder="Start date" />
+        <input matEndDate formControlName="end" placeholder="End date" />
       </mat-date-range-input>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
-      <mat-error class="d-inline-block mx-1" *ngIf="fromDateErrors">{{
-        fromDateErrors
+      <mat-error class="d-inline-block mx-1" *ngIf="startDateErrors">{{
+        startDateErrors
       }}</mat-error>
-      <mat-error class="d-inline-block mx-1" *ngIf="toDateErrors">{{
-        toDateErrors
+      <mat-error class="d-inline-block mx-1" *ngIf="endDateErrors">{{
+        endDateErrors
       }}</mat-error>
       <!-- <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')"
         >Invalid start date</mat-error

@@ -4,10 +4,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ApplicationValidator } from 'src/app/classes/validator/application-validator';
+import { ApplicationValidator } from 'src/app/classes/validators/application-validator';
 import { Movie } from 'src/app/interfaces/application';
 import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { Router } from '@angular/router';
+import { ApplicationService } from 'src/app/services/application/application.service';
 
 @Component({
   selector: 'app-movie-form',
@@ -30,17 +32,21 @@ export class MovieFormComponent implements OnInit {
 
   todayDate = new Date();
 
-  constructor(private fb: FormBuilder, private bar: MatSnackBar) {
+  constructor(private _fb: FormBuilder,
+    private _bar: MatSnackBar,
+    private _router: Router,
+    private _service: ApplicationService,
+    private _validator: ApplicationValidator) {
     this.filteredGenres = this.genreField.valueChanges.pipe(
       startWith(null),
       map((genre: string | null) => genre ? this._filter(genre) : this.allGenres.slice()));
   }
 
   ngOnInit(): void {
-    this.movieForm = this.fb.group({
+    this.movieForm = this._fb.group({
       name: new FormControl('', [
         Validators.required,
-        ApplicationValidator.uniqueMovieName
+        this._validator.uniqueMovieName
       ]),
       release: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required),
@@ -49,7 +55,7 @@ export class MovieFormComponent implements OnInit {
       story: new FormControl('', Validators.required),
       duration: new FormControl('', Validators.required),
       // genres: new FormArray([new FormControl('', Validators.required)]),
-      genreField: this.genreField,
+      genres: this.genreField,
       languages: new FormArray([new FormControl('', Validators.required)]),
       casts: new FormArray([new FormGroup({
         name: new FormControl('', Validators.required),
@@ -71,15 +77,15 @@ export class MovieFormComponent implements OnInit {
     // Add our genre
     if (!value) {
       canAdd = false;
-      this.bar.open('Cannot add empty value', 'OK', { duration: 2000 });
+      this._bar.open('Cannot add empty value', 'OK', { duration: 2000 });
     }
     if (this.genres.find(genre => genre.toLowerCase() == value.toLowerCase())) {
       canAdd = false;
-      this.bar.open('Genre already added', 'OK', { duration: 2000 });
+      this._bar.open('Genre already added', 'OK', { duration: 2000 });
     }
     if (!this.allGenres.find(genre => genre.toLowerCase() == value.toLowerCase())) {
       canAdd = false;
-      this.bar.open('Unknown genre. Please select genres from the list', 'OK', { duration: 2000 });
+      this._bar.open('Unknown genre. Please select genres from the list', 'OK', { duration: 2000 });
     }
 
     if (canAdd)
@@ -102,7 +108,7 @@ export class MovieFormComponent implements OnInit {
       }
     }
     else
-      this.bar.open('At least one Genre must be provided', 'OK', { duration: 2000 });
+      this._bar.open('At least one Genre must be provided', 'OK', { duration: 2000 });
   }
 
   selectedGenre(event: MatAutocompleteSelectedEvent): void {
@@ -112,9 +118,9 @@ export class MovieFormComponent implements OnInit {
         this.genreInput.nativeElement.value = '';
         this.genreField.setValue(null);
       } else
-        this.bar.open('Genre already added', 'OK', { duration: 2000 });
+        this._bar.open('Genre already added', 'OK', { duration: 2000 });
     } else
-      this.bar.open('Unknown genre. Please select genres from the list', 'OK', { duration: 2000 });
+      this._bar.open('Unknown genre. Please select genres from the list', 'OK', { duration: 2000 });
   }
 
   private _filter(value: string): string[] {
@@ -208,7 +214,7 @@ export class MovieFormComponent implements OnInit {
 
   addLanguage(): void {
     if (this.languages.status == "INVALID") {
-      this.bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
+      this._bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
       return;
     }
     this.languages.push(new FormControl('', Validators.required));
@@ -216,7 +222,7 @@ export class MovieFormComponent implements OnInit {
 
   removeLanguage(index: number): void {
     if (this.languages.length <= 1) {
-      this.bar.open('At least one language must be provided', 'OK', { duration: 2000 });
+      this._bar.open('At least one language must be provided', 'OK', { duration: 2000 });
       return
     }
     if (confirm('Do you want to remove the Language?'))
@@ -225,7 +231,7 @@ export class MovieFormComponent implements OnInit {
 
   addCrew(): void {
     if (this.crews.status == "INVALID") {
-      this.bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
+      this._bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
       return;
     }
     this.crews.push(new FormGroup({
@@ -237,7 +243,7 @@ export class MovieFormComponent implements OnInit {
 
   removeCrew(index: number): void {
     if (this.crews.length <= 1) {
-      this.bar.open('At least one Crew details must be provided', 'OK', { duration: 2000 });
+      this._bar.open('At least one Crew details must be provided', 'OK', { duration: 2000 });
       return
     }
     if (confirm('Do you want to remove the Crew?'))
@@ -246,7 +252,7 @@ export class MovieFormComponent implements OnInit {
 
   addCast(): void {
     if (this.casts.status == "INVALID") {
-      this.bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
+      this._bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
       return;
     }
     this.casts.push(new FormGroup({
@@ -258,7 +264,7 @@ export class MovieFormComponent implements OnInit {
 
   removeCast(index: number): void {
     if (this.casts.length <= 1) {
-      this.bar.open('At least one Cast details must be provided', 'OK', { duration: 2000 });
+      this._bar.open('At least one Cast details must be provided', 'OK', { duration: 2000 });
       return
     }
     if (confirm('Do you want to remove the Cast?'))
@@ -266,7 +272,25 @@ export class MovieFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log(this.movieForm.value);
+    let message;
+    this._service.addMovie(this.movieForm.value)
+      .subscribe(
+        data => message = data,
+        err => console.log(err)
+      );
+
+    console.log(message);
+
+    if (message)
+      this._bar.open(message, 'Home', {
+        duration: 3000,
+        verticalPosition: 'bottom', // 'top' | 'bottom'
+        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
+        panelClass: ['red-snackbar'],
+      }
+      ).onAction().subscribe(
+        res => this._router.navigate(['./add-auditorium'])
+      );
 
   }
 }

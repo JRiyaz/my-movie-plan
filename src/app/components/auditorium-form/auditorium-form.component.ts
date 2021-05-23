@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApplicationValidator } from 'src/app/classes/validator/application-validator';
-import { Auditorium } from 'src/app/interfaces/application';
+import { Router } from '@angular/router';
+import { ApplicationValidator } from 'src/app/classes/validators/application-validator';
+import { ApplicationService } from 'src/app/services/application/application.service';
 
 @Component({
   selector: 'app-auditorium-form',
@@ -11,22 +12,25 @@ import { Auditorium } from 'src/app/interfaces/application';
 })
 export class AuditoriumFormComponent implements OnInit {
 
-  auditoriumData!: Auditorium;
   auditoriumForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private bar: MatSnackBar) { }
+  constructor(private _fb: FormBuilder,
+    private _bar: MatSnackBar,
+    private _service: ApplicationService,
+    private _router: Router,
+    private _validator: ApplicationValidator) { }
 
   ngOnInit(): void {
-    this.auditoriumForm = this.fb.group({
+    this.auditoriumForm = this._fb.group({
       name: new FormControl('', [
         Validators.required,
-        ApplicationValidator.uniqueAuditoriumName
+        this._validator.uniqueAuditoriumName
       ]),
       image: new FormControl(''),
       email: new FormControl('', Validators.required),
-      customerCare: new FormControl('', Validators.required),
+      customerCareNo: new FormControl('', Validators.required),
       address: new FormControl('', Validators.required),
-      seatCapacity: new FormControl(150, Validators.required),
+      seatCapacity: new FormControl(90, Validators.required),
       facilities: new FormArray([]),
       safeties: new FormArray([]),
       shows: new FormArray([])
@@ -49,7 +53,7 @@ export class AuditoriumFormComponent implements OnInit {
     console.log(this.auditoriumForm.get('facilities')?.value);
 
     if (this.facilities.status == "INVALID") {
-      this.bar.open('Please complete the above fields', 'OK', {
+      this._bar.open('Please complete the above fields', 'OK', {
         duration: 2000
       });
       return;
@@ -60,12 +64,13 @@ export class AuditoriumFormComponent implements OnInit {
 
   addSafety(): void {
     if (this.safeties.status == "INVALID") {
-      this.bar.open('Please complete the above fields', 'OK', {
+      this._bar.open('Please complete the above fields', 'OK', {
         duration: 2000
       });
       return;
     }
-    this.safeties.push(new FormControl('', Validators.required));
+    this.safeties.push(new FormControl('', [Validators.required,
+    ApplicationValidator.uniqueSafeties(this.safeties.value)]));
   }
 
   get nameErrors(): string {
@@ -91,23 +96,16 @@ export class AuditoriumFormComponent implements OnInit {
     return '';
   }
 
-  get customerCareErrors(): string {
-    let customerCare = this.auditoriumForm.get('customerCare');
-    if (customerCare?.hasError('required'))
+  get customerCareNoErrors(): string {
+    let customerCareNo = this.auditoriumForm.get('customerCareNo');
+    if (customerCareNo?.hasError('required'))
       return 'Customer Care cannot be empty';
     return '';
   }
 
-  // get facilityErrors(): string {
-  //   let customerCare = this.auditoriumForm.get('facilities');
-  //   if (customerCare?.hasError('uniqueName'))
-  //     return 'Facility already added';
-  //   return '';
-  // }
-
   addShow(): void {
     if (this.shows.status == 'INVALID') {
-      this.bar.open('Please complete the above fields', 'OK', {
+      this._bar.open('Please complete the above fields', 'OK', {
         duration: 2000
       });
       return;
@@ -135,9 +133,25 @@ export class AuditoriumFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log(this.auditoriumForm.value);
+    let message;
+    this._service.addAuditorium(this.auditoriumForm.value)
+      .subscribe(
+        data => message = data,
+        err => console.log(err)
+      );
 
-    this.auditoriumData = this.auditoriumForm.value;
+    console.log(message);
+
+    if (message)
+      this._bar.open(message, 'Home', {
+        duration: 3000,
+        verticalPosition: 'bottom', // 'top' | 'bottom'
+        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
+        panelClass: ['red-snackbar'],
+      }
+      ).onAction().subscribe(
+        res => this._router.navigate(['./add-auditorium'])
+      );
   }
 
 }

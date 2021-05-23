@@ -76,10 +76,10 @@
                 <input
                   matInput
                   placeholder="Cust Care No"
-                  formControlName="customerCare"
+                  formControlName="customerCareNo"
                 />
-                <mat-error *ngIf="customerCareErrors">{{
-                  customerCareErrors
+                <mat-error *ngIf="customerCareNoErrors">{{
+                  customerCareNoErrors
                 }}</mat-error>
               </mat-form-field>
             </div>
@@ -118,9 +118,14 @@
               >
                 <mat-label>Safety</mat-label>
                 <input matInput placeholder="Hand Sanitizers Available" />
-                <mat-error *ngIf="safety.errors?.required && safeties.touched"
-                  >Safety Cannot be null</mat-error
-                >
+                <mat-error *ngIf="safeties.touched">
+                  <span *ngIf="safety.errors?.required"
+                    >Safety cannot be empty</span
+                  >
+                  <span *ngIf="safety.errors?.uniqueName"
+                    >Safety already added</span
+                  >
+                </mat-error>
               </mat-form-field>
               <mat-icon
                 class="fs-2 w-auto text-danger delete-icon"
@@ -168,7 +173,7 @@
                 />
                 <mat-error *ngIf="facilities.touched">
                   <span *ngIf="facility.errors?.required"
-                    >Facility cannot be null</span
+                    >Facility cannot be empty</span
                   >
                   <span *ngIf="facility.errors?.uniqueName"
                     >Facility already added</span
@@ -227,7 +232,7 @@
                   <input matInput placeholder="Matnee" formControlName="name" />
                   <mat-error *ngIf="shows.touched">
                     <span *ngIf="show.get('name')?.errors?.required"
-                      >Show Name cannot be null</span
+                      >Show Name cannot be empty</span
                     >
                     <span *ngIf="show.get('name')?.errors?.uniqueName"
                       >Show Name already added</span
@@ -249,7 +254,7 @@
                   />
                   <mat-error *ngIf="shows.touched">
                     <span *ngIf="show.get('startTime')?.errors?.required">
-                      Show Start Time cannot be null</span
+                      Show Start Time cannot be empty</span
                     >
                     <span *ngIf="show.get('startTime')?.errors?.uniqueTime">
                       Time gap between the shows must be at-least 3 hours</span
