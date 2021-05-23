@@ -1,143 +1,132 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Auditorium, Movie } from 'src/app/interfaces/application';
+import { Observable } from 'rxjs';
+import { GlobalConstants } from 'src/app/commons/global-constants';
+import { Auditorium, Booking, Movie, MovieShow, Show } from 'src/app/interfaces/application';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationService {
 
-  auditoriums: Auditorium[] = [
-    {
-      name: 'Cinema 1',
-      shows: [
-        {
-          name: 'show 1',
-          startTime: new Date().toLocaleTimeString('en-US'),
-          movieShows: [
-            {
-              movieId: 1,
-              showId: 1,
-              from: new Date(),
-              to: new Date('30 May 2021')
-            },
-            {
-              movieId: 3,
-              showId: 1,
-              to: new Date()
-            }
-          ]
-        },
-        {
-          name: 'show 2',
-          startTime: new Date().toLocaleTimeString('en-US'),
-          movieShows: [
-            {
-              movieId: 2,
-              showId: 2,
-              from: new Date()
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Cinema 2',
-      shows: [
-        {
-          name: 'show 2',
-          startTime: new Date().toLocaleTimeString('en-US'),
-          movieShows: [
-            {
-              movieId: 2,
-              showId: 2,
-              from: new Date()
-            },
-            {
-              movieId: 3,
-              showId: 2,
-              from: new Date()
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Cinema 3',
-      shows: [
-        {
-          name: 'show 1',
-          startTime: new Date().toLocaleTimeString('en-US'),
-          movieShows: [
-            {
-              movieId: 5,
-              showId: 1,
-              from: new Date()
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Cinema 5',
-      shows: [
-        {
-          name: 'show 1',
-          startTime: new Date().toLocaleTimeString('en-US'),
-          movieShows: [
-            {
-              movieId: 1,
-              showId: 1,
-              from: new Date()
-            }
-          ]
-        },
-        {
-          name: 'show 2',
-          startTime: new Date().toLocaleTimeString('en-US'),
-          movieShows: [
-            {
-              movieId: 2,
-              showId: 2,
-              from: new Date()
-            }
-          ]
-        }
-      ]
-    }
-  ];
+  constructor(private _http: HttpClient) { }
 
-  movies: Movie[] = [
-    {
-      name: 'Move 1',
-      id: 1
-    },
-    {
-      name: 'Move 2',
-      id: 2,
-      release: new Date('20 May 2021')
-      // release: new Date('20 May 2021 ').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-    },
-    {
-      name: 'Move 3',
-      id: 3
-    },
-    {
-      name: 'Move 4',
-      id: 4
-    },
-    {
-      name: 'Move 5',
-      id: 5
-    }
-  ]
-
-  constructor() { }
-
-  getAuditoriumNames(): string[] {
-    return this.auditoriums.map(auditorium => auditorium.name);
+  getAuditorium(auditoriumId: number): Observable<any> {
+    return this._http.get<any>(`${GlobalConstants.AUDITORIUM_URL}/${auditoriumId}`);
   }
 
-  getMovieNames(): string[] {
-    return this.movies.map(movie => movie.name);
+  getAuditoriums(): Observable<any> {
+    return this._http.get<any>(GlobalConstants.GET_AUDITORIUM_URL);
+  }
+
+  addAuditorium(auditorium: Auditorium): Observable<any> {
+    return this._http.post<any>(GlobalConstants.ADD_AUDITORIUM_URL, auditorium);
+  }
+
+  updateAuditorium(auditorium: Auditorium): Observable<any> {
+    return this._http.put<any>(GlobalConstants.UPDATE_AUDITORIUM_URL, auditorium);
+  }
+
+  deleteAuditorium(auditoriumId: number): Observable<any> {
+    return this._http.delete(`${GlobalConstants.DELETE_AUDITORIUM_URL}/${auditoriumId}`);
+  }
+
+  /* 
+    ================= Movie Service ====================
+  */
+
+  getMovie(movieId: number): Observable<any> {
+    return this._http.get<any>(`${GlobalConstants.MOVIE_URL}/${movieId}`);
+  }
+
+  getMovies(): Observable<any> {
+    return this._http.get<any>(GlobalConstants.GET_MOVIE_URL);
+  }
+
+  addMovie(movie: Movie): Observable<any> {
+    return this._http.post<any>(GlobalConstants.ADD_MOVIE_URL, movie);
+  }
+
+  updateMovie(movie: Movie): Observable<any> {
+    return this._http.put<any>(GlobalConstants.UPDATE_MOVIE_URL, movie);
+  }
+
+  deleteMovie(movieId: number): Observable<any> {
+    return this._http.delete(`${GlobalConstants.DELETE_MOVIE_URL}/${movieId}`);
+  }
+
+  /* 
+    ================= Show Service ====================
+  */
+
+  getShow(showId: number): Observable<any> {
+    return this._http.get<any>(`${GlobalConstants.SHOW_URL}/${showId}`);
+  }
+
+  getShows(): Observable<any> {
+    return this._http.get<any>(GlobalConstants.GET_SHOW_URL);
+  }
+
+  addShow(show: Show): Observable<any> {
+    return this._http.post<any>(GlobalConstants.ADD_SHOW_URL, show);
+  }
+
+  updateShow(show: Show): Observable<any> {
+    return this._http.put<any>(GlobalConstants.UPDATE_SHOW_URL, show);
+  }
+
+  deleteShow(showId: number): Observable<any> {
+    return this._http.delete(`${GlobalConstants.DELETE_SHOW_URL}/${showId}`);
+  }
+
+
+  /* 
+    ================= Movie Show Service ====================
+  */
+
+  getMovieShow(movieShowId: number): Observable<any> {
+    return this._http.get<any>(`${GlobalConstants.MOVIESHOWS_URL}/${movieShowId}`);
+  }
+
+  getMovieShows(): Observable<any> {
+    return this._http.get<any>(GlobalConstants.GET_MOVIESHOWS_URL);
+  }
+
+  addMovieShow(movieShow: MovieShow): Observable<any> {
+    return this._http.post<any>(GlobalConstants.ADD_MOVIESHOWS_URL, movieShow);
+  }
+
+  updateMovieShow(movieShow: MovieShow): Observable<any> {
+    return this._http.put<any>(GlobalConstants.UPDATE_MOVIESHOWS_URL, movieShow);
+  }
+
+  deleteMovieShow(movieShowId: number): Observable<any> {
+    return this._http.delete(`${GlobalConstants.DELETE_MOVIESHOWS_URL}/${movieShowId}`);
+  }
+
+
+  /* 
+    ================= Booking Service ====================
+  */
+
+  getBooking(booking: number): Observable<any> {
+    return this._http.get<any>(`${GlobalConstants.BOOKING_URL}/${booking}`);
+  }
+
+  getBookings(): Observable<any> {
+    return this._http.get<any>(GlobalConstants.GET_BOOKING_URL);
+  }
+
+  addBooking(booking: Booking): Observable<any> {
+    return this._http.post<any>(GlobalConstants.ADD_BOOKING_URL, booking);
+  }
+
+  updateBooking(booking: Booking): Observable<any> {
+    return this._http.put<any>(GlobalConstants.UPDATE_BOOKING_URL, booking);
+  }
+
+  deleteBooking(booking: number): Observable<any> {
+    return this._http.delete(`${GlobalConstants.DELETE_BOOKING_URL}/${booking}`);
   }
 }
+
