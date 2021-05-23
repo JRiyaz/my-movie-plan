@@ -17,15 +17,6 @@ body {
   color: #333545;
 }
 
-.dropdown-menu-dark .dropdown-item {
-  color: #333545;
-}
-
-.dropdown-menu-dark .dropdown-item:hover {
-  color: #fff;
-  background-color: black;
-}
-
 .rounded-5 {
   border-radius: 1.5rem;
 }
@@ -52,5 +43,44 @@ body {
   height: 70vh;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.edit-icon,
+.delete-icon {
+  opacity: 0.5;
+}
+
+.edit-icon:hover {
+  opacity: 1;
+}
+
+.active {
+  background-color: #000;
+  color: #fff;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+}
+
+.icon-holder {
+  display: none;
+  position: absolute;
+  right: 5%;
+  top: 30%;
+  z-index: 100;
+  width: auto;
+}
+
+.options:hover {
+  background-color: rgba(0, 0, 0, 0.459);
+  color: #fff;
+}
+
+.options:hover .icon-holder {
+  display: inline-block;
+}
+
+/* For Sneak bar */
+.red-snackbar {
+  background-color: rgb(153, 50, 50);
+  color: lightgoldenrodyellow;
+}

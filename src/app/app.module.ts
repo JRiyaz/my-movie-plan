@@ -53,6 +53,12 @@ import { SelectMembersComponent } from './components/templates/select-members/se
 import { PaymentFormComponent } from './components/templates/payment-form/payment-form.component';
 import { AddMovieToShowFormComponent } from './components/templates/add-movie-to-show-form/add-movie-to-show-form.component';
 import { TicketComponent } from './components/templates/ticket/ticket.component';
+import { HttpClientModule } from '@angular/common/http';
+
+import { AuthService } from './services/auth/auth.service';
+import { GlobalService } from './services/global/global.service';
+import { ApplicationService } from './services/application/application.service';
+
 
 const materialModules: any[] = [
   MatButtonModule,
@@ -114,12 +120,20 @@ const angularModules: any[] = [
   BrowserAnimationsModule,
   FormsModule,
   ReactiveFormsModule,
+  HttpClientModule,
   CommonModule
+]
+
+const services: any[] = [
+  AuthService,
+  ApplicationService,
+  GlobalService
 ]
 
 const providers: any[] = [
   GlobalConstants,
-  MatDatepickerModule
+  // MatDatepickerModule,
+  services
 ];
 
 @NgModule({
