@@ -34,7 +34,7 @@ export class Util {
 
     }
 
-    static sortDates(date1: any, date2: any): number {
+    static sortByDates(date1: any, date2: any): number {
         return new Date(date1).getTime() - new Date(date2).getTime();
     }
 
