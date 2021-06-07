@@ -1,36 +1,53 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApplicationValidator } from 'src/app/classes/validators/application-validator';
+import { GlobalConstants } from 'src/app/commons/global-constants';
+import { LeaveForm } from 'src/app/interfaces/application';
+import { AlertService } from 'src/app/services/alert/alert.service';
 import { ApplicationService } from 'src/app/services/application/application.service';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 @Component({
   selector: 'app-auditorium-form',
   templateUrl: './auditorium-form.component.html',
   styleUrls: ['./auditorium-form.component.css']
 })
-export class AuditoriumFormComponent implements OnInit {
+export class AuditoriumFormComponent implements OnInit, LeaveForm {
 
   auditoriumForm!: FormGroup;
+  allAuditoriumNames!: string[];
+  allFacilities!: string[];
+  allSafeties!: string[];
+  showNames = GlobalConstants.SHOW_NAMES;
 
   constructor(private _fb: FormBuilder,
-    private _bar: MatSnackBar,
+    private _alertService: AlertService,
     private _service: ApplicationService,
     private _router: Router,
-    private _validator: ApplicationValidator) { }
+    private _globalService: GlobalService) { }
+
+  areYouSure(): boolean {
+    return confirm('Are you sure to leave the page?');
+  }
 
   ngOnInit(): void {
+    this._globalService.getAuditoriumNames()
+      .subscribe(halls => this.allAuditoriumNames = halls);
+
+    this.allFacilities = GlobalConstants.HALL_FACILITIES;
+    this.allSafeties = GlobalConstants.HALL_SAFETIES;
+
     this.auditoriumForm = this._fb.group({
       name: new FormControl('', [
         Validators.required,
-        this._validator.uniqueAuditoriumName
+        uniqueAuditoriumName(this.allAuditoriumNames)
       ]),
       image: new FormControl(''),
       email: new FormControl('', Validators.required),
       customerCareNo: new FormControl('', Validators.required),
       address: new FormControl('', Validators.required),
-      seatCapacity: new FormControl(90, Validators.required),
+      seatCapacity: new FormControl(100, Validators.required),
       facilities: new FormArray([]),
       safeties: new FormArray([]),
       shows: new FormArray([])
@@ -50,12 +67,8 @@ export class AuditoriumFormComponent implements OnInit {
   }
 
   addFacility(): void {
-    console.log(this.auditoriumForm.get('facilities')?.value);
-
     if (this.facilities.status == "INVALID") {
-      this._bar.open('Please complete the above fields', 'OK', {
-        duration: 2000
-      });
+      this._alertService.defaultAlert('Please complete the above fields');
       return;
     }
     this.facilities.push(new FormControl('', [Validators.required,
@@ -64,9 +77,7 @@ export class AuditoriumFormComponent implements OnInit {
 
   addSafety(): void {
     if (this.safeties.status == "INVALID") {
-      this._bar.open('Please complete the above fields', 'OK', {
-        duration: 2000
-      });
+      this._alertService.defaultAlert('Please complete the above fields');
       return;
     }
     this.safeties.push(new FormControl('', [Validators.required,
@@ -78,7 +89,7 @@ export class AuditoriumFormComponent implements OnInit {
     if (name?.hasError('required'))
       return "Name cannot be empty";
     else if (name?.hasError('uniqueName'))
-      return "Name already exists";
+      return "Auditorium already exists";
     return '';
   }
 
@@ -105,9 +116,7 @@ export class AuditoriumFormComponent implements OnInit {
 
   addShow(): void {
     if (this.shows.status == 'INVALID') {
-      this._bar.open('Please complete the above fields', 'OK', {
-        duration: 2000
-      });
+      this._alertService.defaultAlert('Please complete the above fields');
       return;
     }
 
@@ -133,25 +142,23 @@ export class AuditoriumFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    let message;
     this._service.addAuditorium(this.auditoriumForm.value)
       .subscribe(
-        data => message = data,
-        err => console.log(err)
-      );
-
-    console.log(message);
-
-    if (message)
-      this._bar.open(message, 'Home', {
-        duration: 3000,
-        verticalPosition: 'bottom', // 'top' | 'bottom'
-        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
-        panelClass: ['red-snackbar'],
-      }
-      ).onAction().subscribe(
-        res => this._router.navigate(['./add-auditorium'])
+        res => {
+          this._globalService.addAuditorium(res);
+          this._router.navigate(['/admin/manage'], { queryParams: { 'auditorium-added': true } });
+        },
+        err => this._alertService.postionAlert(err.error.message, 'danger-alert')
       );
   }
 
+}
+
+function uniqueAuditoriumName(auditoriumNames: string[]): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: boolean } | null => {
+    return auditoriumNames ? auditoriumNames
+      .find(name => name.toLowerCase() == control.value.toLowerCase())
+      ? { 'uniqueName': true }
+      : null : null;
+  };
 }

@@ -117,7 +117,18 @@
                 appearance="outline"
               >
                 <mat-label>Safety</mat-label>
-                <input matInput placeholder="Hand Sanitizers Available" />
+                <input
+                  matInput
+                  placeholder="Hand Sanitizers Available"
+                  [formControlName]="i"
+                  [attr.list]="'safety-' + i"
+                />
+                <datalist [id]="'safety-' + i">
+                  <option [value]="safety" *ngFor="let safety of allSafeties">
+                    {{ safety }}
+                  </option>
+                </datalist>
+
                 <mat-error *ngIf="safeties.touched">
                   <span *ngIf="safety.errors?.required"
                     >Safety cannot be empty</span
@@ -170,7 +181,17 @@
                   matInput
                   placeholder="Parking Facility"
                   [formControlName]="i"
+                  [attr.list]="'facility-' + i"
                 />
+                <datalist [id]="'facility-' + i">
+                  <option
+                    [value]="facility"
+                    *ngFor="let facility of allFacilities"
+                  >
+                    {{ facility }}
+                  </option>
+                </datalist>
+
                 <mat-error *ngIf="facilities.touched">
                   <span *ngIf="facility.errors?.required"
                     >Facility cannot be empty</span
@@ -229,7 +250,16 @@
                   appearance="outline"
                 >
                   <mat-label>Show Name</mat-label>
-                  <input matInput placeholder="Matnee" formControlName="name" />
+                  <input
+                    matInput
+                    formControlName="name"
+                    [attr.list]="'show-name-' + i"
+                  />
+                  <datalist [id]="'show-name-' + i">
+                    <option *ngFor="let show of showNames" [value]="show">
+                      {{ show }}
+                    </option>
+                  </datalist>
                   <mat-error *ngIf="shows.touched">
                     <span *ngIf="show.get('name')?.errors?.required"
                       >Show Name cannot be empty</span
@@ -295,7 +325,13 @@
           </pre>
           <div>
             <button mat-button matStepperPrevious type="button">Back</button>
-            <button mat-button class="text-success">Submit</button>
+            <button
+              mat-button
+              color="primary"
+              [disabled]="!auditoriumForm.valid"
+            >
+              Submit
+            </button>
           </div>
         </mat-step>
       </mat-vertical-stepper>
