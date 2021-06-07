@@ -39,6 +39,10 @@ body {
   height: 90vh;
 }
 
+.h-80vh {
+  height: 80vh;
+}
+
 .h-70vh {
   height: 70vh;
 }
@@ -52,25 +56,32 @@ body {
   opacity: 1;
 }
 
-.active {
-  background-color: #000;
-  color: #fff;
+.highlight {
+  background-color: #000 !important;
+  color: #fff !important;
 }
 
 .delete-icon:hover {
   opacity: 1;
 }
 
-.icon-holder {
+.icon-holder,
+.show-options {
   display: none;
   position: absolute;
   right: 5%;
-  top: 30%;
+  top: 25%;
   z-index: 100;
   width: auto;
 }
 
-.options:hover {
+.show-options {
+  right: 10px;
+  top: 38%;
+}
+
+.options:hover,
+.show-options:hover {
   background-color: rgba(0, 0, 0, 0.459);
   color: #fff;
 }
@@ -80,7 +91,26 @@ body {
 }
 
 /* For Sneak bar */
-.red-snackbar {
-  background-color: rgb(153, 50, 50);
-  color: lightgoldenrodyellow;
+.danger-alert {
+  background-color: rgb(187, 12, 12);
+  color: #fff;
+}
+
+.success-alert {
+  background-color: rgb(8, 121, 8);
+  color: #fff;
+}
+
+.warning-alert {
+  background-color: rgba(170, 146, 7, 0.993);
+  color: #fff;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }

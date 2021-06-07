@@ -39,6 +39,15 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
   </head>
   <body class="mat-typography">
     <app-root></app-root>
@@ -48,5 +57,15 @@
       integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
       crossorigin="anonymous"
     ></script>
+
+    <script type="text/javascript">
+      const myCarousel = document.querySelector("#movies-carousel");
+      if (myCarousel) {
+        const carousel = new bootstrap.Carousel(myCarousel, {
+          interval: 2000,
+          wrap: false,
+        });
+      }
+    </script>
   </body>
 </html>
