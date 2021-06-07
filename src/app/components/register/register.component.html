@@ -1,26 +1,25 @@
 <main class="px-3 my-auto">
-  <p class="lead alert-danger mb-2 p-2 rounded">Cover is a one-page</p>
+  <p
+    class="lead mb-2 p-2 rounded"
+    [ngClass]="(alertDanger$ | async) ? 'alert-danger' : 'alert-success'"
+    *ngIf="showAlert$ | async"
+  >
+    {{ alertMessage$ | async }}
+  </p>
   <h1 class="fs-2 py-4">Register Here</h1>
 
   <div class="example-container">
     <form
-      action="#"
       class="row w-100 g-0"
       [formGroup]="registerForm"
-      (onsubmit)="onSubmit()"
+      (ngSubmit)="onSubmit()"
     >
       <!-- Email Field -->
       <div class="col-12 mb-2 px-lg-1">
         <mat-form-field appearance="outline" class="d-block text-white">
           <mat-label>Enter your Email</mat-label>
-          <input
-            matInput
-            type="email"
-            placeholder="nms@cinemas.com"
-            formControlName="email"
-            class="fs-5"
-          />
-          <mat-hint *ngIf="email.pending" class="text-white"
+          <input matInput type="email" formControlName="email" class="fs-5" />
+          <mat-hint *ngIf="email.pending" class="text-warning"
             >Checking For uniqueness...</mat-hint
           >
           <mat-error *ngIf="emailErrors">{{ emailErrors }}</mat-error>
@@ -30,13 +29,7 @@
       <div class="col-sm-12 col-md-12 col-lg-6 mb-2 px-lg-1">
         <mat-form-field appearance="outline" class="d-block text-white">
           <mat-label>Enter your name</mat-label>
-          <input
-            matInput
-            type="text"
-            placeholder="Your Name"
-            formControlName="name"
-            class="fs-5"
-          />
+          <input matInput type="text" formControlName="name" class="fs-5" />
           <mat-error *ngIf="nameErrors">{{ nameErrors }}</mat-error>
         </mat-form-field>
       </div>
@@ -48,10 +41,9 @@
           <input
             matInput
             type="text"
-            placeholder="9876543210"
             formControlName="mobile"
             class="fs-5"
-          /><mat-hint *ngIf="mobile.pending" class="text-white"
+          /><mat-hint *ngIf="mobile.pending" class="text-warning"
             >Checking For uniqueness...</mat-hint
           >
           <mat-error *ngIf="mobileErrors">{{ mobileErrors }}</mat-error>
@@ -101,11 +93,14 @@
         <mat-error *ngIf="termsErrors">{{ termsErrors }}</mat-error>
       </div>
 
-      <button mat-raised-button color="primary" class="col-12" type="submit">
+      <button
+        mat-raised-button
+        [color]="!registerForm.valid ? 'accent' : 'primary'"
+        class="col-12"
+        type="submit"
+      >
         Register
       </button>
     </form>
   </div>
-
-  {{ registerForm.value }}
 </main>

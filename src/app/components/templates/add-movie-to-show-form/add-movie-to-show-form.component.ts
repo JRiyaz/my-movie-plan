@@ -11,7 +11,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { Util } from 'src/app/classes/util/util';
-import { Movie, MovieShow, TempAddMovieToShow } from 'src/app/interfaces/application';
+import { Movie, MovieShow } from 'src/app/interfaces/application';
 import { ShowFormComponent } from '../show-form/show-form.component';
 
 @Component({
@@ -21,33 +21,33 @@ import { ShowFormComponent } from '../show-form/show-form.component';
 })
 export class AddMovieToShowFormComponent implements OnInit {
 
+  filteredMovies: Observable<Movie[]>;
+
+  startDate!: Date;
+
+  endDate!: Date;
+
+  movieShows!: MovieShow[];
+
+  tempEndDate!: Date;
+
+  movies!: Movie[];
+
   movieShowForm!: FormGroup;
   movieId = new FormControl('', [
     Validators.required,
-    uniqueName(this._data.show.movieShows),
+    uniqueName(this._data.shows),
   ]);
-
-  filteredMovies: Observable<Movie[]>;
 
   range = new FormGroup({
     start: new FormControl('', Validators.required),
     end: new FormControl('', Validators.required),
   });
 
-  startDate!: Date;
-
-  endDate!: Date;
-
-  sorteMovieShows!: MovieShow[];
-
-  tempEndDate!: Date;
-
-  movies!: Movie[];
-
   constructor(
     private _fb: FormBuilder,
     public _dialog: MatDialogRef<ShowFormComponent>,
-    @Inject(MAT_DIALOG_DATA) private _data: any
+    @Inject(MAT_DIALOG_DATA) private _data: { shows: MovieShow[], movies: Movie[] }
   ) {
     this._dialog.disableClose = true;
 
@@ -58,21 +58,18 @@ export class AddMovieToShowFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.movies = this._data.movies;
+    this.movieShows = this._data.shows;
+
+    this.tempEndDate = this.movieShows?.length > 0 ? Util.getTomarrow(Util.findEndDate(this.movieShows.map(m_show => m_show.end))) : new Date();
+
     this.movieShowForm = this._fb.group({
       movieId: this.movieId,
       range: this.range,
-      gold: new FormControl('', Validators.required),
-      silver: new FormControl('', Validators.required),
-      general: new FormControl('', Validators.required),
+      gold: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{3}$')]),
+      silver: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{3}$')]),
+      general: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{3}$')]),
     });
-
-    this.movies = this._data.movies;
-
-    this.sorteMovieShows = this._data.show
-      .movieShows
-      .sort((date1: MovieShow, date2: MovieShow) => Util.sortByDates(date1.end, date2.end));
-
-    this.tempEndDate = this.sorteMovieShows.reverse()[0].end!;
   }
 
   get movieIdErrors(): string {
@@ -101,6 +98,8 @@ export class AddMovieToShowFormComponent implements OnInit {
     let gold = this.movieShowForm.get('gold');
     if (gold?.hasError('required'))
       return 'Gold section price cannot be empty';
+    else if (gold?.hasError('pattern'))
+      return 'Price must be between 100 and 999';
     return '';
   }
 
@@ -108,6 +107,8 @@ export class AddMovieToShowFormComponent implements OnInit {
     let silver = this.movieShowForm.get('silver');
     if (silver?.hasError('required'))
       return 'Silver section price cannot be empty';
+    else if (silver?.hasError('pattern'))
+      return 'Price must be between 100 and 999';
     return '';
   }
 
@@ -115,6 +116,8 @@ export class AddMovieToShowFormComponent implements OnInit {
     let general = this.movieShowForm.get('general');
     if (general?.hasError('required'))
       return 'General section price cannot be empty';
+    else if (general?.hasError('pattern'))
+      return 'Price must be between 100 and 999';
     return '';
   }
 
@@ -123,17 +126,12 @@ export class AddMovieToShowFormComponent implements OnInit {
   }
 
   onMovieChange(event: any): void {
-    const releaseDate: Date = this._data.movies
-      .find((movie: { id: number }) => movie.id == event.value)
-      .release!;
+    const releaseDate: Date = this.movies?.find(movie => movie.id == event.value)?.release!;
 
-    this.startDate = this.tempEndDate > releaseDate ? this.tempEndDate : releaseDate;
+    this.startDate = (new Date(this.tempEndDate) > new Date(releaseDate)) ? this.tempEndDate : releaseDate;
+
     if (!this.startDate)
       this.startDate = new Date();
-  }
-
-  formatDate(date: any): string {
-    return Util.formatDate(date);
   }
 
   onCancel(): void {
@@ -142,7 +140,7 @@ export class AddMovieToShowFormComponent implements OnInit {
 
   onSubmit(): void {
     const values = this.movieShowForm.value;
-    const movieShow: TempAddMovieToShow = {
+    const data: MovieShow = {
       movieId: values.movieId,
       start: values.range.start,
       end: values.range.end,
@@ -152,14 +150,14 @@ export class AddMovieToShowFormComponent implements OnInit {
         general: values.general,
       },
     };
-    this._dialog.close({ movieShow: movieShow });
+    this._dialog.close({ movieShow: data });
   }
 }
 
 function uniqueName(movieShows: MovieShow[]): ValidatorFn {
   return (control: AbstractControl): { [key: string]: boolean } | null => {
-    return movieShows?.find(mShow => mShow.id == control.value)
+    return movieShows ? movieShows.find(mShow => mShow.movieId == control.value)
       ? { uniqueName: true }
-      : null;
+      : null : null;
   };
 }

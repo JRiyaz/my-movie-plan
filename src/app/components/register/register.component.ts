@@ -1,17 +1,23 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { UserValidator } from 'src/app/classes/validators/user-validator';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
+
+  showAlert$ = new BehaviorSubject<boolean>(false);
+
+  alertDanger$ = new BehaviorSubject<boolean>(false);
+
+  alertMessage$ = new BehaviorSubject<string>('');
 
   hidePassword: boolean = true;
 
@@ -23,12 +29,15 @@ export class RegisterComponent implements OnInit {
   ]
 
   constructor(private _fb: FormBuilder,
-    private _auth: AuthService,
-    private _bar: MatSnackBar,
     private _router: Router,
-    private _validator: UserValidator) { }
+    private _auth: AuthService,
+    private _validator: UserValidator,
+    private _userService: UserService) { }
 
   ngOnInit(): void {
+
+    if (this._userService.isLoggedIn())
+      this._router.navigate(['/home'], { queryParams: { 'logged-in': true } });
 
     this.registerForm = this._fb.group({
       name: new FormControl('', [
@@ -47,7 +56,7 @@ export class RegisterComponent implements OnInit {
         Validators.required,
         Validators.minLength(4),
         Validators.maxLength(50),
-        Validators.pattern('^(?!.* )(?=.*\d)(?=.*[A-Z]).{8,15}$')
+        // Validators.pattern('^(?!.* )(?=.*\d)(?=.*[A-Z]).{8,15}$')
       ]),
       mobile: new FormControl('', [
         Validators.required,
@@ -60,7 +69,7 @@ export class RegisterComponent implements OnInit {
         Validators.minLength(4),
         Validators.maxLength(20)
       ]),
-      terms: new FormControl(false, [Validators.required])
+      terms: new FormControl(true, Validators.requiredTrue)
     })
   }
 
@@ -112,7 +121,7 @@ export class RegisterComponent implements OnInit {
     else if (mobile?.hasError('maxlength'))
       return `Mobile should not exceed ${mobile?.errors?.maxlength?.requiredLength} characters`;
     else if (mobile?.hasError('pattern'))
-      return `Mobile no must starts with 9, 8 or, 7`;
+      return `Invalid mobile number`;
     else if (mobile?.hasError('unique'))
       return 'Mobile already exists';
     return '';
@@ -120,7 +129,7 @@ export class RegisterComponent implements OnInit {
 
   get termsErrors(): string {
     const terms = this.registerForm.get('terms');
-    if (terms?.hasError('required'))
+    if (terms?.hasError('required') && this.registerForm.touched)
       return 'Please accept terms and conditions';
     return '';
   }
@@ -134,24 +143,15 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    let message;
-    this._auth.registerUser(this.registerForm.value)
+
+    const sub = this._auth.registerUser(this.registerForm.value)
       .subscribe(
-        data => message = data,
-        err => console.log(err)
-      );
-
-    console.log(message);
-
-    if (message)
-      this._bar.open(message, 'Login', {
-        duration: 3000,
-        verticalPosition: 'bottom', // 'top' | 'bottom'
-        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
-        panelClass: ['red-snackbar'],
-      }
-      ).onAction().subscribe(
-        res => this._router.navigate(['./login'])
+        res => this._router.navigate(['/user/login'], { queryParams: { 'sign-up': true } }),
+        err => {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(true);
+          this.alertMessage$.next('Something went wrong');
+        }
       );
   }
 

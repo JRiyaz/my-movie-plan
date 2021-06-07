@@ -50,6 +50,11 @@
   color: red !important;
 }
 
+/* // mat-label error style */
+::ng-deep .mat-form-field.mat-form-field-invalid .mat-form-field-label {
+  color: red !important;
+}
+
 ::ng-deep .mat-select .mat-select-trigger .mat-select-value {
   color: #fff;
 }

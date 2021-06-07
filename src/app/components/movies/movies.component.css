@@ -1,0 +1,6 @@
+.clear-filter {
+  z-index: 1000;
+  cursor: pointer;
+  text-align: end;
+  display: inline-block;
+}

@@ -5,9 +5,7 @@ import { GlobalConstants } from 'src/app/commons/global-constants';
   selector: 'app-login-layout',
   templateUrl: './login-layout.component.html',
   styleUrls: ['./login-layout.component.css'],
-  // encapsulation: ViewEncapsulation.ShadowDom
   encapsulation: ViewEncapsulation.Emulated
-  // encapsulation: ViewEncapsulation.None
 })
 export class LoginLayoutComponent implements OnInit {
 

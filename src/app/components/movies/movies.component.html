@@ -1,0 +1,221 @@
+<div class="px-lg-5 row g-0 my-5 justify-content-around position-relative">
+  <div class="col-3">
+    <div class="sorting text-center mb-3 align-self-center">
+      <h2 class="fs-2 text-center text-dark text-uppercase">Show</h2>
+      <br />
+      <mat-form-field appearance="outline" class="d-block w-100">
+        <mat-label>Show</mat-label>
+        <mat-select name="showText" [(ngModel)]="showText">
+          <mat-option
+            *ngFor="let type of types"
+            [value]="type"
+            (onSelectionChange)="onTypeChange(type)"
+            >{{ type }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <br />
+    <div class="filter">
+      <h2 class="fs-2 text-center text-dark text-uppercase">Filters</h2>
+      <br />
+      <mat-accordion
+        class="example-headers-align"
+        multi
+        togglePosition="before"
+      >
+        <mat-expansion-panel class="rounded my-1">
+          <mat-expansion-panel-header>
+            <mat-panel-title
+              [ngClass]="{
+                'text-danger': languageFilter != null && languageFilter != ''
+              }"
+            >
+              Language
+            </mat-panel-title>
+            <mat-panel-description
+              (click)="clearLanguageFilter()"
+              class="clear-filter"
+              [ngClass]="{
+                'text-danger': languageFilter != null && languageFilter != ''
+              }"
+            >
+              Clear
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="row g-0 justify-content-around">
+            <div
+              class="my-2 col-4 text-start"
+              *ngFor="let language of allLanguages"
+            >
+              <input
+                type="radio"
+                autocomplete="off"
+                [checked]="language == languageFilter"
+                class="btn-check"
+                [id]="language"
+                name="selectedLanguage"
+                (change)="handleLanguageChange(language)"
+              />
+              <label
+                class="btn btn-sm"
+                [for]="language"
+                [ngClass]="{
+                  'btn-warning': language == languageFilter,
+                  'btn-info': language != languageFilter
+                }"
+                >{{ language }}</label
+              >
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="rounded my-1">
+          <mat-expansion-panel-header>
+            <mat-panel-title
+              [ngClass]="{
+                'text-danger': genreFilter != null && genreFilter != ''
+              }"
+            >
+              Genre
+            </mat-panel-title>
+            <mat-panel-description
+              class="clear-filter"
+              (click)="clearGenreFilter()"
+              [ngClass]="{
+                'text-danger': genreFilter != null && genreFilter != ''
+              }"
+              >Clear</mat-panel-description
+            >
+          </mat-expansion-panel-header>
+          <div class="row g-0 justify-content-around">
+            <div class="my-2 col-4 text-start" *ngFor="let genre of allGenres">
+              <input
+                type="radio"
+                autocomplete="off"
+                [checked]="genre == genreFilter"
+                class="btn-check"
+                [id]="genre"
+                name="selectedGenre"
+                (change)="handleGenreChange(genre)"
+              />
+              <label
+                class="btn btn-sm"
+                [for]="genre"
+                [ngClass]="{
+                  'btn-warning': genre == genreFilter,
+                  'btn-info': genre != genreFilter
+                }"
+                >{{ genre }}</label
+              >
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+
+  <div class="col-8 movies">
+    <div class="now-showing">
+      <mat-toolbar
+        [color]="showText == 'Now Playing' ? 'primary' : 'accent'"
+        class="rounded"
+      >
+        <div class="row g-0 justify-content-around w-100 h-auto py-3">
+          <div class="col-sm-12 col-lg-3 text-center">{{ showText }}</div>
+          <div class="col-sm-12 col-lg-9">
+            <input
+              class="form-control me-2 w-100"
+              type="search"
+              placeholder="Search for movie, genre or language"
+              aria-label="Search"
+              name="search"
+              [(ngModel)]="search"
+            />
+          </div>
+        </div>
+      </mat-toolbar>
+      <h1 class="text-center text-warning my-4" *ngIf="!(moviesList$ | async)">
+        No movies found
+      </h1>
+      <div class="now-showing-movies my-4" *ngIf="moviesList$ | async">
+        <div class="card-group justify-content-around">
+          <ng-container
+            *ngIf="
+              moviesList$
+                | async
+                | search: search:genreFilter:languageFilter as result
+            "
+          >
+            <p
+              class="lead my-2 p-2 rounded alert-danger"
+              *ngIf="result.length < 1 || !result"
+            >
+              No result found with
+              <span class="text-danger"
+                >{{ search }}{{ " " + languageFilter
+                }}{{ " " + genreFilter }}</span
+              >
+            </p>
+            <div
+              class="col-4 px-2 position-relative"
+              *ngFor="let movie of result"
+            >
+              <div
+                class="image-card position-relative rounded-5 overflow-hidden"
+              >
+                <img
+                  [src]="movie.image"
+                  class="card-img-top"
+                  height="400"
+                  width="280"
+                  [alt]="movie.name"
+                />
+                <!-- <svg
+                  class="bd-placeholder-img card-img-top"
+                  width="100%"
+                  height="350"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Placeholder: Thumbnail"
+                  preserveAspectRatio="xMidYMid slice"
+                  focusable="false"
+                >
+                  <title>Placeholder</title>
+                  <rect width="100%" height="100%" fill="#55595c"></rect>
+                </svg> -->
+                <div
+                  class="
+                    image-release
+                    position-absolute
+                    bottom-0
+                    start-0
+                    bg-dark
+                    text-white
+                    w-100
+                    text-center
+                    py-2
+                  "
+                >
+                  {{ formatRelease(movie.release) }}
+                </div>
+              </div>
+              <div class="card-body text-center">
+                <h2 class="card-title fs-4 mb-0">
+                  <a
+                    class="stretched-link"
+                    routerLink="../movie/{{ movie.id }}"
+                    >{{ movie.name | uppercase }}</a
+                  >
+                </h2>
+                <h3 class="card-text text-muted">
+                  {{ movie.language | titlecase }}
+                </h3>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

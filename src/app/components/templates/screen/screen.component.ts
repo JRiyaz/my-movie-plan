@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { TempScreen } from 'src/app/interfaces/application';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { Util } from 'src/app/classes/util/util';
+import { TempScreen, TempSelectMembers } from 'src/app/interfaces/application';
+import { ApplicationService } from 'src/app/services/application/application.service';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 @Component({
   selector: 'app-screen',
@@ -12,40 +17,77 @@ export class ScreenComponent implements OnInit {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'
   ];
 
-  tempSeatRows!: number[];
+  tempSeatRows = [...Array(11).keys()].filter(num => num > 0);
 
-  alreadySelectedSeats: Set<string> = new Set();
+  goldPrice$ = new BehaviorSubject<number>(0);
 
-  seatsToBeSelected: number = 5;
+  silverPrice$ = new BehaviorSubject<number>(0);
+
+  generalPrice$ = new BehaviorSubject<number>(0);
+
+  auditoriumName$ = new BehaviorSubject<string>('');
+
+  // selectedDate$ = new BehaviorSubject<Date>(new Date());
+
+  // showTiming$ = new BehaviorSubject<string>('');
+
+  // selectedMovieName$ = new BehaviorSubject<string>('');
+
+  // selectedMovieLanguage$ = new BehaviorSubject<string>('');
+
+  seatsToBeSelected!: number;
+
+  // alreadySelectedSeats: string[] = [];
+
+  avalibleSeats!: number;
 
   nowSelectedSeats: Set<string> = new Set();
 
   totalAmount: number = 0;
 
-  constructor() { }
+  selectMembers!: TempSelectMembers;
+
+  gold = 0;
+  silver = 0;
+  general = 0;
+
+  constructor(private _service: GlobalService,
+    private _router: Router,
+    private _appService: ApplicationService) { }
 
   ngOnInit(): void {
-    this.tempSeatRows = [...Array(9).keys()].filter(num => num > 0);
-    // let seats = this.alreadySelectedSeats;
-    // seats.add('A6');
-    // seats.add('B10');
-    // seats.add('J3');
-    // seats.add('J4');
-    // seats.add('F8');
+
+    this.selectMembers = this._service.getTempSelectMembers();
+
+    if (!this.selectMembers)
+      this._router.navigate(['/home'], { queryParams: { 'booking': 'false' } });
+    // this.selectedDate$.next(data.date);
+    // this.showTiming$.next(data.showTime);
+    // this.selectedMovieName$.next(data.movieName);
+    // this.selectedMovieLanguage$.next(data.movieLanguage);
+    this.seatsToBeSelected = this.selectMembers.seats;
+    // this.avalibleSeats = 100 - data.bookedSeats;
+    // this.alreadySelectedSeats = data.bookedSeatNumbers;
+
+    this._appService.getMovieShow(this.selectMembers.movieShowId).subscribe(m_show => {
+      this.goldPrice$.next(m_show.price?.gold!);
+      this.silverPrice$.next(m_show.price?.silver!);
+      this.generalPrice$.next(m_show.price?.general!);
+    })
   }
 
   addSeat(event: any): boolean {
     const value: string = event.target.value;
-    if (this.alreadySelectedSeats.has(value))
+    if (this.selectMembers.bookedSeatNumbers.indexOf(value) >= 0)
       return false;
     const seats = this.nowSelectedSeats;
     if (seats.has(value) && seats.delete(value)) {
       if (value.startsWith('J') || value.startsWith('I') || value.startsWith('H'))
-        this.totalAmount -= 350;
+        this.totalAmount -= this.goldPrice$.value;
       else if (value.startsWith('A') || value.startsWith('B') || value.startsWith('C'))
-        this.totalAmount -= 200;
+        this.totalAmount -= this.generalPrice$.value;
       else
-        this.totalAmount -= 300;
+        this.totalAmount -= this.silverPrice$.value;
       this.seatsToBeSelected++;
       return false;
     }
@@ -54,11 +96,11 @@ export class ScreenComponent implements OnInit {
         return false;
       seats.add(value);
       if (value.startsWith('J') || value.startsWith('I') || value.startsWith('H'))
-        this.totalAmount += 350;
+        this.totalAmount += this.goldPrice$.value;
       else if (value.startsWith('A') || value.startsWith('B') || value.startsWith('C'))
-        this.totalAmount += 200;
+        this.totalAmount += this.generalPrice$.value;
       else
-        this.totalAmount += 300;
+        this.totalAmount += this.silverPrice$.value;
       this.seatsToBeSelected--;
       return true;
     }
@@ -69,20 +111,25 @@ export class ScreenComponent implements OnInit {
   }
 
   isSeatAlreadySelected(value: string): boolean {
-    return this.alreadySelectedSeats.has(value) ? true : false;
+    return this.selectMembers.bookedSeatNumbers.indexOf(value) >= 0 ? true : false;
   }
 
-  toString(): string {
+  getSelectedSeats(): string {
     return [...this.nowSelectedSeats].join(', ');
   }
 
+  formatTime(time: string): string {
+    return Util.formatTimeToAmOrPm(time);
+  }
+
   onProceed(): void {
-    const auditoriumShowBooking: TempScreen = {
-      auditoriumId: 1,  // Get this from tempApplicationService
-      showId: 1,        //Get this from tempApplicationService
+
+    const tempScreen: TempScreen = {
       amount: this.totalAmount,
-      selectedSeats: this.nowSelectedSeats
+      selectedSeatNumbers: [...this.nowSelectedSeats],
+      selectedSeats: this.selectMembers.seats,
     }
-    // Set the above "auditoriumShowBooking" to tempApplicationService for futher action
+    this._service.setTempScreen(tempScreen);
+    this._router.navigate(['./payment']);
   }
 }

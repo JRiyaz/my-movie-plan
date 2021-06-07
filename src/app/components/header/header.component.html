@@ -1,5 +1,5 @@
 <nav
-  *ngIf="router.url !== '/screen'"
+  *ngIf="router.url !== '/select-seats'"
   id="nav-bar"
   class="navbar navbar-expand-lg navbar-dark bg-show text-white px-lg-3"
 >
@@ -37,17 +37,8 @@
             mat-button
             class="nav-link"
             routerLinkActive="active"
-            routerLink="/now-showing"
-            >Now Showing</a
-          >
-        </li>
-        <li class="nav-item mx-lg-2 mx-md-auto">
-          <a
-            mat-button
-            class="nav-link"
-            routerLinkActive="active"
-            routerLink="/up-comming"
-            >Up Comming</a
+            [routerLink]="['/movies']"
+            >Movies</a
           >
         </li>
         <li class="nav-item mx-lg-2 mx-md-auto">
@@ -68,7 +59,7 @@
             >Contact Us</a
           >
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" *ngIf="service.isAdmin()">
           <a
             class="nav-link dropdown-toggle"
             href="#"
@@ -85,7 +76,7 @@
                 class="dropdown-item"
                 href="#"
                 routerLinkActive="active"
-                routerLink="/add-auditorium"
+                routerLink="/admin/add-auditorium"
                 >Auditorium</a
               >
             </li>
@@ -94,7 +85,7 @@
                 class="dropdown-item"
                 href="#"
                 routerLinkActive="active"
-                routerLink="/add-movie"
+                routerLink="/admin/add-movie"
                 >Movie</a
               >
             </li>
@@ -112,7 +103,7 @@
                 class="dropdown-item"
                 href="#"
                 routerLinkActive="active"
-                routerLink="/manage"
+                routerLink="/admin/manage"
                 >Manage</a
               >
             </li>
@@ -158,24 +149,16 @@
           <a routerLink="/user/bookings" mat-menu-item>My Bookings</a>
           <a routerLink="/user/logout" mat-menu-item>Logout</a>
         </mat-menu> -->
-        <ul class="navbar-nav col-auto">
+        <ul class="navbar-nav col-auto" *ngIf="service.isLoggedIn()">
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle fs-6 my-2"
               href="#"
               id="account-links"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
-            >
-              <img
-                class="rounded-circle mx-2"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK9DmKOF9VCBqRzdHLzwyyOXjDm4kOYjD9IZQo2WviiLzzxDmzwYQZaVK6_7o_Qc7famc&usqp=CAU"
-                alt=""
-                width="45"
-                height="45"
-              />
-              <span>My Account</span>
+              >{{ service.getUser()?.email! }}
             </a>
             <ul
               class="dropdown-menu dropdown-menu-dark"
@@ -194,14 +177,14 @@
               <li class="nav-item text-center">
                 <a
                   class="btn btn-outline-warning btn-sm col-11 mt-2"
-                  routerLink="/user/logout"
+                  (click)="onLogout()"
                   >Logout</a
                 >
               </li>
             </ul>
           </li>
         </ul>
-        <div class="btn-group p-2">
+        <div class="btn-group p-2" *ngIf="!service.isLoggedIn()">
           <a
             routerLink="/user/login"
             routerLinkActive="active"

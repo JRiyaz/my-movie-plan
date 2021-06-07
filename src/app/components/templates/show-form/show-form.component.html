@@ -5,7 +5,12 @@
   <form class="example-form p-4" [formGroup]="showForm">
     <mat-form-field class="d-block w-100 text-dark" appearance="outline">
       <mat-label>Show Name</mat-label>
-      <input matInput placeholder="Matnee" formControlName="name" />
+      <input matInput formControlName="name" list="show-name" />
+      <datalist id="show-name">
+        <option *ngFor="let show of showNames" [value]="show">
+          {{ show }}
+        </option>
+      </datalist>
       <mat-error *ngIf="nameErrors">
         {{ nameErrors }}
       </mat-error>

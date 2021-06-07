@@ -1,6 +1,10 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { Util } from 'src/app/classes/util/util';
+import { Booking, Payment, TempScreen, TempSelectMembers } from 'src/app/interfaces/application';
+import { ApplicationService } from 'src/app/services/application/application.service';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 export const MY_FORMATS = {
   parse: {
@@ -29,28 +33,38 @@ export class PaymentFormComponent implements OnInit {
 
   tempMonths: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  tempYears!: number[];
+  tempYears: number[] = [];
 
-  amountToBePaid!: number;
+  // amountToBePaid!: number;
+
+  tempScreen!: TempScreen;
+
+  selectedMembers!: TempSelectMembers;
 
   constructor(private _fb: FormBuilder,
-    public _dialog: MatDialogRef<PaymentFormComponent>,
-    @Inject(MAT_DIALOG_DATA) private _data: any) {
-    this._dialog.disableClose = true;
-  }
+    private _global: GlobalService,
+    private _appService: ApplicationService,
+    private _router: Router
+  ) { }
 
   ngOnInit(): void {
+
+    this.tempScreen = this._global.getTempScreen();
+    this.selectedMembers = this._global.getTempSelectMembers();
+
+    if (!this.tempScreen && !this.selectedMembers)
+      this._router.navigate(['/home'], { queryParams: { payment: 'false' } });
+
+    [...Array(9).keys()].forEach(num => this.tempYears.push(new Date().getFullYear() + num));
+
+    // this.amountToBePaid = this.tempScreen.amount;
+
     this.paymentForm = this._fb.group({
       cardNumber: new FormControl('', [Validators.required, Validators.pattern('^[ 0-9]*$'), Validators.minLength(17)]),
       cardExpiryMonth: new FormControl('', Validators.required),
       cardExpiryYear: new FormControl('', Validators.required),
       cardCVV: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{3}$')])
     });
-
-    const year = new Date().getFullYear();
-    [...Array(9).keys()].forEach(num => this.tempYears.push(year + num));
-
-    this.amountToBePaid = this._data.amount;
   }
 
   get cardNumberErrors(): string {
@@ -114,12 +128,31 @@ export class PaymentFormComponent implements OnInit {
     }
   }
 
-  onCancel(): void {
-    this._dialog.close();
+  formatTime(time: string): string {
+    return Util.formatTimeToAmOrPm(time);
   }
 
   onSubmit(): void {
-    this._dialog.close({ payment: this.paymentForm.value });
-  }
+    const members = this.selectedMembers;
+    if (this.tempScreen && members && this.paymentForm.value) {
+      const paymentData: Payment = this.paymentForm.value;
+      paymentData.paymentDate = new Date();
+      paymentData.amount = this.tempScreen.amount;
 
+      const booking: Booking = {
+        amount: this.tempScreen.amount,
+        bookedOn: new Date(),
+        dateOfBooking: members.date,
+        totalSeats: this.tempScreen.selectedSeats,
+        seatNumbers: this.tempScreen.selectedSeatNumbers,
+        payment: paymentData,
+      }
+      this._appService.addBooking(members.auditoriumId, members.showId, members.movieShowId, booking)
+        .subscribe(booking => {
+          if (booking) {
+            this._router.navigate(['/user/bookings'], { queryParams: { 'payment': true } });
+          }
+        })
+    }
+  }
 }

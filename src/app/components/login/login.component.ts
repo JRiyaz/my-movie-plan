@@ -1,27 +1,79 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { GlobalService } from 'src/app/services/global/global.service';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+
+
+  showAlert$ = new BehaviorSubject<boolean>(false);
+
+  alertDanger$ = new BehaviorSubject<boolean>(false);
+
+  alertMessage$ = new BehaviorSubject<string>('');
 
   hidePassword: boolean = true;
 
   loginForm!: FormGroup;
 
+  redirect!: string;
+
   constructor(private _fb: FormBuilder,
-    private _bar: MatSnackBar,
-    private _auth: AuthService,
-    private _router: Router) { }
+    private _authService: AuthService,
+    private _userService: UserService,
+    private _router: Router,
+    private _activeRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.redirect = window.history.state?.redirect!;
+
+    // console.log(this._globalService.isLoggedIn());
+
+    if (this._userService.isLoggedIn())
+      this._router.navigate(['/home'], { queryParams: { 'logged-in': true } });
+
+    this._activeRoute.queryParams
+      .subscribe(param => {
+        if (param['sign-up']) {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(false);
+          this.alertMessage$.next('Registration successful. Please login');
+        }
+        else if (param['logout']) {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(false);
+          this.alertMessage$.next('Logout successful.');
+        }
+        else if (param['booking']) {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(true);
+          this.alertMessage$.next('Please Login to book tickets.');
+        }
+        else if (param['wrong']) {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(true);
+          this.alertMessage$.next('Something went wrong please login.');
+        }
+        else if (param['error']) {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(true);
+          this.alertMessage$.next(param['error']);
+        }
+        else if (param['login']) {
+          this.showAlert$.next(true);
+          this.alertDanger$.next(true);
+          this.alertMessage$.next(param['error']);
+        }
+      });
+
     this.loginForm = this._fb.group({
       username: new FormControl('', [Validators.required, Validators.minLength(4)]),
       password: new FormControl('', [Validators.required, Validators.minLength(4)])
@@ -47,25 +99,22 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    let message;
-    this._auth.registerUser(this.loginForm.value)
-      .subscribe(
-        data => message = data,
-        err => console.log(err)
-      );
-
-    console.log(message);
-
-    if (message)
-      this._bar.open(message, 'Home', {
-        duration: 3000,
-        verticalPosition: 'bottom', // 'top' | 'bottom'
-        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
-        panelClass: ['red-snackbar'],
-      }
-      ).onAction().subscribe(
-        res => this._router.navigate(['./login'])
-      );
+    if (this.loginForm.valid)
+      this._authService.loginUser(this.loginForm.value)
+        .subscribe(
+          res => {
+            if (res.token)
+              if (this._userService.setToken(res.token))
+                this._router.navigate([this.redirect ? this.redirect : '/home'], { queryParams: { 'login': true } });
+              else
+                this._router.navigate(['/home'], { queryParams: { 'logged-in': true } });
+          },
+          err => {
+            this.showAlert$.next(true);
+            this.alertDanger$.next(true);
+            this.alertMessage$.next(err.error.message);
+          }
+        );
   }
 
 }

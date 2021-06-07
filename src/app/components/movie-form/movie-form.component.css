@@ -28,7 +28,6 @@
 .form-field:hover .delete-icon {
   display: inline !important;
 }
-
 /* // mat-icon-stepper selected color change  */
 ::ng-deep .mat-step-header .mat-step-icon-selected,
 ::ng-deep .mat-step-header .mat-step-icon-state-done,

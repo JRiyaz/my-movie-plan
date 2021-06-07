@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Util } from 'src/app/classes/util/util';
 import { Auditorium, Movie, MovieShow, Show } from 'src/app/interfaces/application';
-// import { ApplicationService } from 'src/app/services/application/application.service';
+import { AlertService } from 'src/app/services/alert/alert.service';
+import { ApplicationService } from 'src/app/services/application/application.service';
+import { GlobalService } from 'src/app/services/global/global.service';
 import { AddMovieToShowFormComponent } from '../templates/add-movie-to-show-form/add-movie-to-show-form.component';
 import { ShowFormComponent } from '../templates/show-form/show-form.component';
 
@@ -12,101 +15,161 @@ import { ShowFormComponent } from '../templates/show-form/show-form.component';
   styleUrls: ['./manage.component.css'],
 })
 export class ManageComponent implements OnInit {
-  // constructor(
-  //   private router: Router,
-  //   // private appService: ApplicationService,
-  //   private dialog: MatDialog
-  // ) { }
 
-  ngOnInit(): void { }
 
-  // cinemaHalls: Auditorium[] = this.appService.auditoriums;
+  allAuditoriums!: Auditorium[];
 
-  // selectedCinemaHall!: string;
+  allMovies!: Movie[];
 
-  // selectedShow!: string;
+  selectedCinemaHallId!: number;
 
-  // selectedShows!: Show[];
+  selectedShowId!: number;
 
-  // selectedMovies: Movie[] = []
+  selectedShows!: Show[];
 
-  // onCinemaHallSelect(auditorium: string): void {
-  //   this.selectedCinemaHall = auditorium;
-  //   this.selectedShows = this.cinemaHalls.find(
-  //     (cinema) => cinema.name == auditorium
-  //   )?.shows!;
-  //   this.selectedShow = '';
-  //   this.selectedMovies = [];
-  // }
+  selectedMovieShows!: MovieShow[];
 
-  // onShowSelect(showName: string): void {
-  //   this.selectedShow = showName;
-  //   const shows: MovieShow[] = this.selectedShows.find((show) => show.name == showName)
-  //     ?.movieShows!;
-  //   this.selectedMovies = this.appService.movies.filter((movie) =>
-  //     shows.find((m_show) => m_show.movie?.id == movie.id)
-  //   );
-  // }
+  constructor(
+    private _router: Router,
+    private _dialog: MatDialog,
+    private _service: ApplicationService,
+    private _globalService: GlobalService,
+    private _alertService: AlertService,
+    private _activeRoute: ActivatedRoute
+  ) { }
 
-  // onAddCinemaHall(): void {
-  //   this.router.navigate(['./add-auditorium']);
-  // }
+  ngOnInit(): void {
+    this._globalService.getAllAuditoriums()
+      .subscribe(halls => this.allAuditoriums = halls);
+    this._globalService.getAllMovies()
+      .subscribe(movies => this.allMovies = movies);
 
-  // onAddMovie(): void {
-  //   this.router.navigate(['./add-movie']);
-  // }
+    this._activeRoute.queryParams
+      .subscribe(param => {
+        if (param['movie-added'])
+          this._alertService.postionAlert('Movie Added');
+        else if (param['auditorium-added'])
+          this._alertService.postionAlert('Auditorium Added');
+        // else if (param['show-added'])
+        //   this._alertService.postionAlert('Show Added');
+        // else if (param['movie-show-added'])
+        //   this._alertService.postionAlert('Movie Show Added');
+      });
+  }
 
-  // onAddMovieToTheShow(): void {
-  //   const dialog = this.dialog.open(AddMovieToShowFormComponent, {
-  //     width: '50%',
-  //     data: {
-  //       show: this.selectedShows.
-  //         find(show => show.name == this.selectedShow),
-  //       movies: this.appService.movies
-  //     }
-  //   });
-  // }
+  onCinemaHallSelect(auditoriumId: number): void {
+    this.selectedCinemaHallId = auditoriumId;
+    this.selectedShows = this.allAuditoriums.find(
+      (hall) => hall.id == auditoriumId
+    )?.shows!;
+    this.selectedShowId = 0;
+    this.selectedMovieShows = [];
+  }
 
-  // onAddShow(): void {
-  //   const dialog = this.dialog.open(ShowFormComponent, {
-  //     width: '50%',
-  //     data: this.selectedShows
-  //   })
+  onShowSelect(showId: number): void {
+    this.selectedShowId = showId;
 
-  //   dialog.afterClosed().subscribe(
-  //     (result) => {
-  //       let show = result.show;
-  //       console.log(typeof show);
+    this.selectedMovieShows = this.selectedShows.find((show) => show.id == showId)
+      ?.movieShows!;
+  }
 
-  //       if (show)
-  //         this.selectedShows.push(show);
-  //     },
-  //     (error) => console.log(error)
-  //   );
+  getShowMovieName(movieId: number): string {
+    return this.allMovies.find(movie => movie.id == movieId)?.name!;
+  }
+  getShowMovieLanguage(movieId: number): string {
+    return this.allMovies.find(movie => movie.id == movieId)?.language!;
+  }
 
-  // }
+  getMovieImage(movieId: number): string {
+    return this.allMovies.find(movie => movie.id == movieId)?.image!;
+  }
 
-  // onEditCinemaHall(auditorium: string): void {
-  //   alert(`edit ${auditorium}`);
-  // }
+  onAddCinemaHall(): void {
+    this._router.navigate(['./add-auditorium']);
+  }
 
-  // onDeleteCinemaHall(auditorium: string): void {
-  //   alert(`delete ${auditorium}`);
-  // }
+  onAddMovie(): void {
+    this._router.navigate(['./add-movie']);
+  }
 
-  // onEditShow(showName: string): void {
-  //   alert(`edit show ${showName}`);
-  // }
 
-  // onDeleteShow(showName: string): void {
-  //   alert(`delete show: ${showName}`);
-  // }
+  onAddShow(): void {
+    const dialog = this._dialog.open(ShowFormComponent, {
+      width: '80%',
+      data: this.selectedShows
+    })
 
-  // onEditMovie(movieName: string): void {
-  //   alert(`edit movie ${movieName}`);
-  // }
+    dialog.afterClosed().subscribe(result => {
+      if (result?.show) {
+        this._service.addShow(this.selectedCinemaHallId, result.show)
+          .subscribe(
+            res => {
+              this._globalService.addShow(this.selectedCinemaHallId, res)
+              this._alertService.postionAlert('Show Added');
+              // this.selectedShows.push(res);
+            },
+            err => this._alertService.postionAlert(err.error.message, 'danger-alert')
+          );
+      }
+    },
+      (error) => console.log(error)
+    );
 
-  // onDeleteMovie(movieName: string): void {
-  //   alert(`delete movie ${movieName}`);
-  // }
+  }
+
+  onAddMovieToTheShow(): void {
+    const movieShows = this.selectedShows.
+      find(show => show.id == this.selectedShowId)?.movieShows;
+    const dialog = this._dialog.open(AddMovieToShowFormComponent, {
+      width: '90%',
+      data: {
+        shows: movieShows,
+        movies: this.allMovies
+      }
+    });
+
+    dialog.afterClosed().subscribe(result => {
+      if (result?.movieShow) {
+        this._service.addMovieShow(this.selectedCinemaHallId, this.selectedShowId, result.movieShow)
+          .subscribe(
+            res => {
+              if (res) {
+                this._globalService.addMovieShows(this.selectedCinemaHallId, this.selectedShowId, res);
+                this._alertService.postionAlert('Movie Show Added');
+              }
+              // this.selectedShows.find(show => show.id == this.selectedShowId)?.movieShows?.push(res);
+            },
+            err => this._alertService.postionAlert(err.error.message, 'danger-alert')
+          );
+      }
+    })
+  }
+
+  formatTime(time: string): string {
+    return Util.formatTimeToAmOrPm(time);
+  }
+
+  onEditCinemaHall(auditoriumId: number): void {
+    alert(`edit ${auditoriumId}`);
+  }
+
+  onDeleteCinemaHall(auditoriumId: number): void {
+    alert(`delete ${auditoriumId}`);
+  }
+
+  onEditShow(showId: number): void {
+    alert(`edit show ${showId}`);
+  }
+
+  onDeleteShow(showId: number): void {
+    alert(`delete show: ${showId}`);
+  }
+
+  onEditMovie(movieId: number): void {
+    alert(`edit movie ${movieId}`);
+  }
+
+  onDeleteMovie(movieId: number): void {
+    alert(`delete movie ${movieId}`);
+  }
 }

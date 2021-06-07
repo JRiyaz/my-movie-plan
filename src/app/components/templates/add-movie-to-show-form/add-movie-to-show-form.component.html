@@ -7,7 +7,6 @@
     <mat-form-field class="d-block w-100 text-dark" appearance="outline">
       <mat-label>Select Movie</mat-label>
       <mat-select
-        matInput
         aria-label="State"
         [formControl]="movieId"
         (click)="movieId.reset()"
@@ -26,7 +25,8 @@
             height="120"
             width="120"
           />
-          <span class="me-1">{{ movie.name }}</span> |
+          <span class="me-1">{{ movie.name | uppercase }}</span> |
+          <span class="me-1">{{ movie.language | titlecase }}</span> |
           <small class="me-1"
             >Release: {{ movie.release | date: "fullDate" }}</small
           >

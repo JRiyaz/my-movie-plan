@@ -103,13 +103,8 @@
                 class="d-block w-100 text-dark"
                 appearance="outline"
               >
-                <mat-label>Rating</mat-label>
-                <input
-                  type="number"
-                  matInput
-                  placeholder="4.5"
-                  formControlName="rating"
-                />
+                <mat-label>Movie Caption</mat-label>
+                <input matInput formControlName="caption" />
               </mat-form-field>
             </div>
 
@@ -140,47 +135,48 @@
           </div>
         </mat-step>
 
-        <mat-step [stepControl]="movieForm.get('genres')!">
-          <ng-template matStepLabel>Add Genres</ng-template>
+        <mat-step [stepControl]="movieForm.get('languages')!">
+          <ng-template matStepLabel>Add Language</ng-template>
 
           <div class="col-12 my-4 px-sm-1 px xl-4">
             <mat-form-field
               class="example-chip-list"
               class="d-block w-100 text-dark"
             >
-              <mat-label>Add Genres</mat-label>
-              <mat-chip-list #genreList aria-label="Genre selection">
+              <mat-label>Add Language</mat-label>
+              <mat-chip-list #languageList aria-label="language selection">
                 <mat-chip
-                  *ngFor="let genre of genres"
+                  *ngFor="let language of languages"
                   [selectable]="true"
                   [removable]="true"
-                  (removed)="removeGenre(genre)"
+                  (removed)="removeLanguage(language)"
                 >
-                  {{ genre }}
+                  {{ language }}
                   <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
                 </mat-chip>
                 <input
-                  placeholder="New Genre..."
-                  #genreInput
-                  formControlName="genres"
+                  placeholder="New Language..."
+                  #languageInput
+                  formControlName="languages"
                   [matAutocomplete]="auto"
-                  [matChipInputFor]="genreList"
+                  [matChipInputFor]="languageList"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addGenre($event)"
+                  (matChipInputTokenEnd)="addLanguage($event)"
                 />
-                <mat-error *ngIf="movieForm.get('genres')?.hasError('required')"
-                  >Genre cannot be empty</mat-error
+                <mat-error
+                  *ngIf="movieForm.get('languages')?.hasError('required')"
+                  >Language cannot be empty</mat-error
                 >
               </mat-chip-list>
               <mat-autocomplete
                 #auto="matAutocomplete"
-                (optionSelected)="selectedGenre($event)"
+                (optionSelected)="selectedLanguage($event)"
               >
                 <mat-option
-                  *ngFor="let genre of filteredGenres | async"
-                  [value]="genre"
+                  *ngFor="let language of filteredLanguages | async"
+                  [value]="language"
                 >
-                  {{ genre }}
+                  {{ language }}
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
@@ -228,31 +224,49 @@
           </div>
         </mat-step>
 
-        <mat-step [stepControl]="movieForm.get('languages')!">
+        <mat-step [stepControl]="movieForm.get('genres')!">
           <ng-template matStepLabel>Add Language</ng-template>
           <div class="row g-0 justify-content-around">
             <div
               class="col-sm-12 col-lg-5 form-field"
-              formArrayName="languages"
-              *ngFor="let language of languages.controls; index as i"
+              formArrayName="genres"
+              *ngFor="let genres of genres.controls; index as i"
             >
               <mat-form-field
                 class="d-block w-100 text-dark"
                 appearance="outline"
               >
-                <mat-label>Language</mat-label>
-                <input matInput placeholder="English" [formControlName]="i" />
-                <mat-error
-                  *ngIf="language.errors?.required && languages.touched"
-                  >Language cannot be empty</mat-error
-                >
+                <mat-label>Genre</mat-label>
+                <input
+                  matInput
+                  placeholder="Comedy"
+                  [formControlName]="i"
+                  [attr.list]="'genres-' + i"
+                />
+                <datalist [id]="'genres-' + i">
+                  <option [value]="genre" *ngFor="let genre of allGenres">
+                    {{ genre }}
+                  </option>
+                </datalist>
+
+                <mat-error *ngIf="genres.touched">
+                  <span class="mx-1" *ngIf="genres.errors?.required"
+                    >Genre cannot be empty</span
+                  >
+                  <span class="mx-1" *ngIf="genres.errors?.validGenre"
+                    >Invalid movie genre</span
+                  >
+                  <span class="mx-1" *ngIf="genres.errors?.uniqueName"
+                    >Genre already added</span
+                  >
+                </mat-error>
               </mat-form-field>
 
               <mat-icon
                 class="fs-2 w-auto text-danger delete-icon"
-                (click)="removeLanguage(i)"
+                (click)="removeGenre(i)"
                 aria-hidden="false"
-                matTooltip="Remove the Language"
+                matTooltip="Remove the Genre"
                 aria-label="delete icon"
                 >delete</mat-icon
               >
@@ -262,9 +276,9 @@
             <mat-icon
               class="pe-cursor fs-2"
               aria-hidden="false"
-              matTooltip="Add one more Language"
+              matTooltip="Add one more Genre"
               aria-label="add_circle icon"
-              (click)="addLanguage()"
+              (click)="addGenre()"
               >add_circle</mat-icon
             >
           </div>

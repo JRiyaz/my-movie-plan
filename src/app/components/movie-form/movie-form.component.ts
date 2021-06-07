@@ -1,68 +1,90 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ApplicationValidator } from 'src/app/classes/validators/application-validator';
-import { Movie } from 'src/app/interfaces/application';
-import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { Router } from '@angular/router';
+import { GlobalConstants } from 'src/app/commons/global-constants';
+import { LeaveForm, Movie } from 'src/app/interfaces/application';
+import { AlertService } from 'src/app/services/alert/alert.service';
 import { ApplicationService } from 'src/app/services/application/application.service';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 @Component({
   selector: 'app-movie-form',
   templateUrl: './movie-form.component.html',
-  styleUrls: ['./movie-form.component.css']
+  styleUrls: ['./movie-form.component.css'],
+  encapsulation: ViewEncapsulation.Emulated,
+  providers: [ApplicationValidator]
 })
-export class MovieFormComponent implements OnInit {
+export class MovieFormComponent implements OnInit, LeaveForm {
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  filteredGenres!: Observable<string[]>;
-  genreField: FormControl = new FormControl();
-  genres: string[] = ['Comedy'];
-  allGenres: string[] = ['Comedy', 'Romance', 'Action', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Thriller', 'Crime', 'War'];
+  filteredLanguages!: Observable<string[]>;
+  languageField: FormControl = new FormControl();
+  languages: string[] = ['English'];
+  allLanguages!: string[];
 
-  @ViewChild('genreInput') genreInput!: ElementRef<HTMLInputElement>;
+  allGenres!: string[];
+
+  @ViewChild('languageInput') languageInput!: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete!: MatAutocomplete;
 
-  movieData!: Movie;
   movieForm!: FormGroup;
 
   todayDate = new Date();
 
+  allMovieNames!: string[];
+
   constructor(private _fb: FormBuilder,
-    private _bar: MatSnackBar,
-    private _router: Router,
     private _service: ApplicationService,
-    private _validator: ApplicationValidator) {
-    this.filteredGenres = this.genreField.valueChanges.pipe(
+    private _router: Router,
+    private _globalService: GlobalService,
+    private _alertService: AlertService) {
+
+    this.filteredLanguages = this.languageField.valueChanges.pipe(
       startWith(null),
-      map((genre: string | null) => genre ? this._filter(genre) : this.allGenres.slice()));
+      map((genre: string | null) => genre ? this._filter(genre) : this.allLanguages.slice()));
+  }
+
+  areYouSure(): boolean {
+    return confirm('Are you sure to leave the page?');
   }
 
   ngOnInit(): void {
+    this._globalService.getMovieNames()
+      .subscribe(movieNames => this.allMovieNames = movieNames);
+
+    this.allLanguages = GlobalConstants.ALL_LANGUAGES;
+    this.allGenres = GlobalConstants.ALL_GENERS;
+
     this.movieForm = this._fb.group({
       name: new FormControl('', [
         Validators.required,
-        this._validator.uniqueMovieName
+        ApplicationValidator.uniqueMovieName(this.allMovieNames)
       ]),
       release: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required),
       bgImage: new FormControl('', Validators.required),
-      rating: new FormControl(''),
+      caption: new FormControl(''),
       story: new FormControl('', Validators.required),
       duration: new FormControl('', Validators.required),
       // genres: new FormArray([new FormControl('', Validators.required)]),
-      genres: this.genreField,
-      languages: new FormArray([new FormControl('', Validators.required)]),
+      languages: this.languageField,
+      genres: new FormArray([new FormControl('', [Validators.required,
+      ApplicationValidator.validMovieGenre(this.allGenres)]
+      )]),
       casts: new FormArray([new FormGroup({
+        isCast: new FormControl('yes'),
         name: new FormControl('', Validators.required),
         role: new FormControl('', Validators.required),
         image: new FormControl('', Validators.required)
       })]),
       crews: new FormArray([new FormGroup({
+        isCast: new FormControl('no'),
         name: new FormControl('', Validators.required),
         role: new FormControl('', Validators.required),
         image: new FormControl('', Validators.required)
@@ -70,63 +92,62 @@ export class MovieFormComponent implements OnInit {
     });
   }
 
-  addGenre(event: MatChipInputEvent): void {
+  addLanguage(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
     let canAdd: boolean = true;
     // Add our genre
     if (!value) {
       canAdd = false;
-      this._bar.open('Cannot add empty value', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('Cannot add empty value');
     }
-    if (this.genres.find(genre => genre.toLowerCase() == value.toLowerCase())) {
+    if (this.languages.find(language => language.toLowerCase() == value.toLowerCase())) {
       canAdd = false;
-      this._bar.open('Genre already added', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('Language already added');
     }
-    if (!this.allGenres.find(genre => genre.toLowerCase() == value.toLowerCase())) {
+    if (!this.allLanguages.find(language => language.toLowerCase() == value.toLowerCase())) {
       canAdd = false;
-      this._bar.open('Unknown genre. Please select genres from the list', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('Unknown language. Please select language from the list');
     }
 
     if (canAdd)
-      this.genres.push(value);
+      this.languages.push(value);
 
 
     // Clear the input value
     // event.chipInput!.clear();
     event.input.value = '';
 
-    this.genreField.setValue(null);
+    this.languageField.setValue(null);
   }
 
-  removeGenre(genre: string): void {
-    if (!(this.genres.length <= 1)) {
-      const index = this.genres.indexOf(genre);
-
+  removeLanguage(genre: string): void {
+    if (!(this.languages.length <= 1)) {
+      const index = this.languages.indexOf(genre);
       if (index >= 0) {
-        this.genres.splice(index, 1);
+        this.languages.splice(index, 1);
       }
     }
     else
-      this._bar.open('At least one Genre must be provided', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('At least one Language must be provided');
   }
 
-  selectedGenre(event: MatAutocompleteSelectedEvent): void {
-    if (this.allGenres.find(genre => genre.toLowerCase() == event.option.viewValue.toLowerCase())) {
-      if (!this.genres.find(genre => genre.toLowerCase() == event.option.viewValue.toLowerCase())) {
-        this.genres.push(event.option.viewValue);
-        this.genreInput.nativeElement.value = '';
-        this.genreField.setValue(null);
+  selectedLanguage(event: MatAutocompleteSelectedEvent): void {
+    if (this.allLanguages.find(language => language.toLowerCase() == event.option.viewValue.toLowerCase())) {
+      if (!this.languages.find(language => language.toLowerCase() == event.option.viewValue.toLowerCase())) {
+        this.languages.push(event.option.viewValue);
+        this.languageInput.nativeElement.value = '';
+        this.languageField.setValue(null);
       } else
-        this._bar.open('Genre already added', 'OK', { duration: 2000 });
+        this._alertService.defaultAlert('Language already added');
     } else
-      this._bar.open('Unknown genre. Please select genres from the list', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('Unknown language. Please select language from the list');
   }
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.allGenres.filter(genre => genre.toLowerCase().indexOf(filterValue) === 0);
+    return this.allLanguages.filter(language => language.toLowerCase().indexOf(filterValue) === 0);
   }
 
   get validMovieDetails(): AbstractControl {
@@ -179,12 +200,8 @@ export class MovieFormComponent implements OnInit {
     return '';
   }
 
-  get genre(): FormArray {
+  get genres(): FormArray {
     return this.movieForm.get('genres') as FormArray;
-  }
-
-  get languages(): FormArray {
-    return this.movieForm.get('languages') as FormArray;
   }
 
   get crews(): FormArray {
@@ -195,46 +212,50 @@ export class MovieFormComponent implements OnInit {
     return this.movieForm.get('casts') as FormArray;
   }
 
-  // addGenre(): void {
-  //   if (this.genres.status == "INVALID") {
-  //     this.bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
-  //     return;
-  //   }
-  //   this.genres.push(new FormControl('', Validators.required));
-  // }
-
-  // removeGenre(index: number): void {
-  //   if (this.genres.length <= 1) {
-  //     this.bar.open('At least one Genre must be provided', 'OK', { duration: 2000 });
-  //     return
-  //   }
-  //   if (confirm('Do you want to remove the Genre?'))
-  //     this.genres.removeAt(index);
-  // }
-
-  addLanguage(): void {
-    if (this.languages.status == "INVALID") {
-      this._bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
+  addGenre(): void {
+    if (this.genres.status == "INVALID") {
+      this._alertService.defaultAlert('Please complete the above fields first');
       return;
     }
-    this.languages.push(new FormControl('', Validators.required));
+    this.genres.push(new FormControl('', [Validators.required,
+    ApplicationValidator.validMovieGenre(this.allGenres),
+    ApplicationValidator.uniqueFacility(this.genres.value)]));
   }
 
-  removeLanguage(index: number): void {
-    if (this.languages.length <= 1) {
-      this._bar.open('At least one language must be provided', 'OK', { duration: 2000 });
+  removeGenre(index: number): void {
+    if (this.genres.length <= 1) {
+      this._alertService.defaultAlert('At least one Genre must be provided');
       return
     }
-    if (confirm('Do you want to remove the Language?'))
-      this.languages.removeAt(index);
+    if (confirm('Do you want to remove the Genre?'))
+      this.genres.removeAt(index);
   }
+
+  // addLanguage(): void {
+  //   if (this.languages.status == "INVALID") {
+  //     this._alertService.defaultAlert('Please complete the above fields first');
+  //     return;
+  //   }
+  //   this.languages.push(new FormControl('', [Validators.required, this._validator.validMovieLanguage]));
+  // }
+
+  // removeLanguage(index: number): void {
+  //   if (this.languages.length <= 1) {
+  //     this._alertService.defaultAlert('At least one language must be provided');
+  //     // this._bar.open('At least one language must be provided', 'OK', { duration: 3000 });
+  //     return
+  //   }
+  //   if (confirm('Do you want to remove the Language?'))
+  //     this.languages.removeAt(index);
+  // }
 
   addCrew(): void {
     if (this.crews.status == "INVALID") {
-      this._bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('Please complete the above fields first');
       return;
     }
     this.crews.push(new FormGroup({
+      isCast: new FormControl('no'),
       name: new FormControl('', Validators.required),
       role: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required)
@@ -243,7 +264,7 @@ export class MovieFormComponent implements OnInit {
 
   removeCrew(index: number): void {
     if (this.crews.length <= 1) {
-      this._bar.open('At least one Crew details must be provided', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('At least one Crew details must be provided');
       return
     }
     if (confirm('Do you want to remove the Crew?'))
@@ -252,10 +273,11 @@ export class MovieFormComponent implements OnInit {
 
   addCast(): void {
     if (this.casts.status == "INVALID") {
-      this._bar.open('Please complete the above fields first', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('Please complete the above fields first');
       return;
     }
     this.casts.push(new FormGroup({
+      isCast: new FormControl('yes'),
       name: new FormControl('', Validators.required),
       role: new FormControl('', Validators.required),
       image: new FormControl('', Validators.required)
@@ -264,7 +286,7 @@ export class MovieFormComponent implements OnInit {
 
   removeCast(index: number): void {
     if (this.casts.length <= 1) {
-      this._bar.open('At least one Cast details must be provided', 'OK', { duration: 2000 });
+      this._alertService.defaultAlert('At least one Cast details must be provided');
       return
     }
     if (confirm('Do you want to remove the Cast?'))
@@ -272,25 +294,29 @@ export class MovieFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    let message;
-    this._service.addMovie(this.movieForm.value)
-      .subscribe(
-        data => message = data,
-        err => console.log(err)
-      );
-
-    console.log(message);
-
-    if (message)
-      this._bar.open(message, 'Home', {
-        duration: 3000,
-        verticalPosition: 'bottom', // 'top' | 'bottom'
-        horizontalPosition: 'end', //'start' | 'center' | 'end' | 'left' | 'right'
-        panelClass: ['red-snackbar'],
-      }
-      ).onAction().subscribe(
-        res => this._router.navigate(['./add-auditorium'])
-      );
-
+    let count = 0;
+    const movie: Movie = this.movieForm.value;
+    movie.addedOn = new Date();
+    movie.year = movie.release?.getFullYear().toString();
+    this.languages.forEach(language => {
+      movie.language = language;
+      this._service.addMovie(movie)
+        .subscribe(
+          res => this._globalService.addMovie(res),
+          err => this._alertService.postionAlert(err.error.message, 'danger-alert')
+        );
+      count++;
+    });
+    if (count >= this.languages.length)
+      this._router.navigate(['/admin/manage'], { queryParams: { 'movie-added': true } });
   }
 }
+
+// function uniqueMovieName(movieNames: string[]): ValidatorFn {
+//   return (control: AbstractControl): { [key: string]: boolean } | null => {
+//     return movieNames ? movieNames
+//       .find(name => name.toLowerCase() == control.value.toLowerCase())
+//       ? { 'uniqueName': true }
+//       : null : null;
+//   };
+// }

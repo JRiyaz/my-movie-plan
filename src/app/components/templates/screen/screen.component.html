@@ -1,40 +1,40 @@
-<div class="screen-container w-100 bg-dark text-white">
-  <div class="my-auto row g-0 align-content-center h-100vh">
-    <div
-      class="
-        ticket-details
-        mb-2
-        py-2
-        row
-        g-0
-        justify-content-between
-        align-content-center align-self-start
-      "
-    >
-      <div class="col-3 text-center">
-        <div>
-          Seats Selected: &nbsp;
-          <span class="lead text-danger">{{ toString() }}</span>
-        </div>
+<div class="screen-container w-100 py-3 bg-dark text-white">
+  <span class="d-inline-block text-warning mx-auto text-center py-2 w-100"
+    >NOTE: do not refresh the page</span
+  >
+  <div class="my-auto row g-0 align-content-center">
+    <div class="ticket-details mb-3 row g-0 justify-content-between">
+      <div class="col-4 text-center">
+        Movie: &nbsp;
+        <span class="lead text-white">{{
+          selectMembers.movieName | uppercase
+        }}</span>
       </div>
 
-      <div class="col-3 text-center">
-        <div>
-          NO.Of Seats to Select: &nbsp;
-          <span class="lead">{{ seatsToBeSelected }}</span>
-        </div>
+      <div class="col-4 text-center">
+        Time: &nbsp;
+        <span class="lead">{{ formatTime(selectMembers.showTime) }}</span>
       </div>
 
-      <div class="col-3 text-center">
-        <div>
-          Total Cost: &nbsp;
-          <span class="lead">{{ totalAmount }}</span>
-        </div>
+      <div class="col-4 text-center">
+        Date: &nbsp;
+        <span class="lead">{{ selectMembers.date | date: "fullDate" }}</span>
+      </div>
+    </div>
+
+    <div class="ticket-details mb-3 row g-0 justify-content-between">
+      <div class="col-4 text-center">
+        Seats Selected: &nbsp;
+        <span class="lead text-danger">{{ getSelectedSeats() }}</span>
       </div>
 
-      <div class="col-3 text-center">
+      <div class="col-4 text-center">
+        Amount: &nbsp;
+        <span class="lead">{{ totalAmount }}</span>
+      </div>
+
+      <div class="col-4 text-center">
         <button
-          color="primary"
           mat-raised-button
           type="submit"
           [disabled]="seatsToBeSelected != 0"
@@ -45,67 +45,112 @@
       </div>
     </div>
 
+    <!-- <div class="row g-0 text-center">
+      <div class="col-4 text-center">
+        <mat-icon
+          class="fs-sm-5 fs-lg-3 w-auto h-auto text-danger"
+          aria-hidden="false"
+          aria-label="Example home icon"
+          >chair
+        </mat-icon>
+        - <span class="text-white">Booked</span>
+      </div>
+      <div class="col-4 text-center">
+        <mat-icon
+          class="fs-sm-5 fs-lg-3 w-auto h-auto text-white"
+          aria-hidden="false"
+          aria-label="Example home icon"
+          >chair
+        </mat-icon>
+        - <span class="text-white">Avaliable</span>
+      </div>
+      <div class="col-4 text-center">
+        <mat-icon
+          class="fs-sm-5 fs-lg-3 w-auto h-auto text-info"
+          aria-hidden="false"
+          aria-label="Example home icon"
+          >chair
+        </mat-icon>
+        - <span class="text-white">Your Selection</span>
+      </div>
+    </div> -->
+
     <div
       class="screen-layout position-relative w-100 bg-dark text-white p-sm-0"
     >
-      <mat-card class="bg-dark text-white text-center p-sm-0">
-        <mat-list class="bg-dark text-white p-sm-0">
+      <mat-card class="bg-dark text-white text-center">
+        <mat-list class="bg-dark text-white">
           <ng-container
             *ngFor="let item of tempSeatColumns.reverse(); index as i"
           >
             <h3 class="text-danger m-1" *ngIf="i == 7">
               <!-- EXECUTIVE &#8377;200.00 -->
-              EXECUTIVE {{ "200.00" | currency: "INR" }}
+              EXECUTIVE {{ generalPrice$ | async | currency: "INR" }}
             </h3>
             <h3 class="text-danger m-1" *ngIf="i == 3">
-              SILVER {{ "300.00" | currency: "INR" }}
+              SILVER {{ silverPrice$ | async | currency: "INR" }}
             </h3>
             <h3 class="text-danger m-1" *ngIf="i == 0">
-              GOLD {{ "350.00" | currency: "INR" }}
+              GOLD {{ goldPrice$ | async | currency: "INR" }}
             </h3>
-            <mat-list-item class="justify-content-around py-1 h-auto px-sm-0">
-              <div class="col-1 text-info fs-3 px-sm-0">{{ item }}</div>
-              <div class="col-sm-11 col-lg-10 px-sm-0">
-                <ng-container *ngFor="let seat of tempSeatRows; index as i">
-                  <div
-                    class="me-sm-1 mx-lg-4 d-inline"
-                    *ngIf="i == 3 || i == 11"
-                  ></div>
-                  <input
-                    type="checkbox"
-                    class="btn-check"
-                    name="{{ item + seat }}"
-                    [checked]="isAdded(item + seat)"
-                    [disabled]="isSeatAlreadySelected(item + seat)"
-                    [id]="item + seat"
-                    [value]="item + seat"
-                    (click)="addSeat($event)"
-                  />
-                  <label
-                    [for]="item + seat"
-                    class="
-                      col-auto
-                      p-sm-0
-                      me-sm-1
-                      ms-sm-0
-                      mx-lg-2
-                      pe-cursor
-                      h-auto
-                    "
-                    [ngClass]="{
-                      'text-white': !isAdded(item + seat),
-                      'text-success': isAdded(item + seat),
-                      'text-danger': isSeatAlreadySelected(item + seat)
-                    }"
-                  >
-                    <mat-icon
-                      class="fs-sm-5 fs-lg-3 w-auto h-auto"
-                      aria-hidden="false"
-                      aria-label="Example home icon"
-                      >chair
-                    </mat-icon>
-                  </label>
-                </ng-container>
+            <mat-list-item class="justify-content-center py-1 h-auto px-sm-0">
+              <!-- <div class="col-1 text-info fs-3 px-sm-0">{{ item }}</div> -->
+              <div
+                class="
+                  row
+                  col-12
+                  g-0
+                  mx-auto
+                  justify-content-center
+                  px-sm-0
+                  text-center
+                "
+              >
+                <div class="col-1 text-center text-info fs-3">
+                  {{ item }}
+                </div>
+                <div class="col-auto">
+                  <ng-container *ngFor="let seat of tempSeatRows; index as i">
+                    <div
+                      class="me-sm-1 mx-lg-4 d-inline"
+                      *ngIf="i == 3 || i == 7"
+                    ></div>
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      name="{{ item + seat }}"
+                      [checked]="isAdded(item + seat)"
+                      [disabled]="isSeatAlreadySelected(item + seat)"
+                      [id]="item + seat"
+                      [value]="item + seat"
+                      (click)="addSeat($event)"
+                    />
+                    <label
+                      [for]="item + seat"
+                      class="
+                        col-auto
+                        p-sm-0
+                        me-sm-1
+                        ms-sm-0
+                        mx-lg-2
+                        pe-cursor
+                        h-auto
+                      "
+                      [ngClass]="{
+                        'text-white': !isAdded(item + seat),
+                        'text-info': isAdded(item + seat),
+                        'text-danger': isSeatAlreadySelected(item + seat)
+                      }"
+                    >
+                      <mat-icon
+                        class="fs-sm-5 fs-lg-3 w-auto h-auto"
+                        aria-hidden="false"
+                        aria-label="Example home icon"
+                        >chair
+                      </mat-icon>
+                    </label>
+                  </ng-container>
+                </div>
               </div>
             </mat-list-item>
           </ng-container>
@@ -116,7 +161,7 @@
     <div
       class="
         screen
-        w-75
+        col-10
         mx-auto
         py-3
         text-white
@@ -129,30 +174,3 @@
     </div>
   </div>
 </div>
-
-<!-- <input
-  type="checkbox"
-  class="btn-check"
-  [disabled]="present"
-  name="{{ item + seat }}"
-  [checked]="isAdded(item + seat)"
-  [id]="item + seat"
-  [value]="item + seat"
-  (click)="addSeat($event)"
-/>
-<label
-  [for]="item + seat"
-  class="col-auto mx-1 pe-cursor h-auto"
-  [ngClass]="{
-    'text-secondary': present,
-    'text-success': isAdded(item + seat),
-    'text-white': !isAdded(item + seat)
-  }"
->
-  <mat-icon
-    class="fs-3 w-auto h-auto"
-    aria-hidden="false"
-    aria-label="Example home icon"
-    >chair
-  </mat-icon>
-</label> -->

@@ -1,71 +1,127 @@
-<div class="wrapper">
-  <h1 class="text-center mb-3 p-2 rounded border border-2 shadow-sm">
-    Add Movie To Show
-  </h1>
-  <form [formGroup]="paymentForm" class="example-form p-4">
-    <mat-form-field appearance="outline" class="d-block w-100 text-dark">
-      <mat-label>Card Number</mat-label>
-      <input
-        matInput
-        formControlName="cardNumber"
-        type="tel"
-        #ccNumber
-        class="fs-3 bolder"
-        (keyup)="creditCardNumberSpacing()"
-      />
-      <mat-hint>16 digit card number</mat-hint>
-      <mat-error *ngIf="cardNumberErrors">{{ cardNumberErrors }}</mat-error>
-    </mat-form-field>
+<div class="wrapper p-5">
+  <div class="text-center mb-3 p-2 rounded border border-2 shadow-sm">
+    <h1 class="text-center d-inline-block my-2">Payment Gateway</h1>
+    (<span class="text-danger d-inline-block my-2">do not refresh the page</span
+    >)
+  </div>
+  <div class="my-auto h-70vh row g-0 justify-content-around">
+    <div class="col-6 px-2 mx-auto order-2">
+      <form [formGroup]="paymentForm" class="example-form p-4">
+        <mat-form-field appearance="outline" class="d-block w-100 text-dark">
+          <mat-label>Card Number</mat-label>
+          <input
+            matInput
+            formControlName="cardNumber"
+            type="tel"
+            #ccNumber
+            class="fs-3 bolder col-12"
+            (keyup)="creditCardNumberSpacing()"
+          />
+          <mat-hint>16 digit card number</mat-hint>
+          <mat-error *ngIf="cardNumberErrors">{{ cardNumberErrors }}</mat-error>
+        </mat-form-field>
 
-    <div class="row g-0 justify-content-around">
-      <mat-form-field appearance="outline" class="d-block text-dark col-4 px-1">
-        <mat-label>Month</mat-label>
-        <mat-select formControlName="cardExpiryMonth">
-          <mat-option *ngFor="let month of tempMonths" [value]="month">
-            {{ month }}
-          </mat-option>
-        </mat-select>
-        <mat-hint>Select card expiry month</mat-hint>
-        <mat-error *ngIf="monthErrors">{{ monthErrors }}</mat-error>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="d-block text-dark col-4 px-1">
-        <mat-label>Year</mat-label>
-        <mat-select formControlName="cardExpiryYear">
-          <mat-option *ngFor="let year of tempYears" [value]="year">
-            {{ year }}
-          </mat-option>
-        </mat-select>
-        <mat-hint>select card expiry year</mat-hint>
-        <mat-error *ngIf="yearErrors">{{ yearErrors }}</mat-error>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="d-block text-dark col-4 px-1">
-        <mat-label>CVV</mat-label>
-        <input
-          matInput
-          [type]="cvvHide ? 'password' : 'text'"
-          formControlName="cardCVV"
-        />
+        <div class="row g-0 justify-content-around">
+          <mat-form-field
+            appearance="outline"
+            class="d-block text-dark col-sm-12 col-lg-4 px-1"
+          >
+            <mat-label>Month</mat-label>
+            <mat-select formControlName="cardExpiryMonth">
+              <mat-option *ngFor="let month of tempMonths" [value]="month">
+                {{ month }}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Select card expiry month</mat-hint>
+            <mat-error *ngIf="monthErrors">{{ monthErrors }}</mat-error>
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            class="d-block text-dark col-sm-12 col-lg-4 px-1"
+          >
+            <mat-label>Year</mat-label>
+            <mat-select formControlName="cardExpiryYear">
+              <mat-option *ngFor="let year of tempYears" [value]="year">
+                {{ year }}
+              </mat-option>
+            </mat-select>
+            <mat-hint>select card expiry year</mat-hint>
+            <mat-error *ngIf="yearErrors">{{ yearErrors }}</mat-error>
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            class="d-block text-dark col-sm-12 col-lg-4 px-1"
+          >
+            <mat-label>CVV</mat-label>
+            <input
+              matInput
+              [type]="cvvHide ? 'password' : 'text'"
+              formControlName="cardCVV"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="cvvHide = !cvvHide"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="cvvHide"
+            >
+              <mat-icon>{{
+                cvvHide ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error *ngIf="cvvErrors">{{ cvvErrors }}</mat-error>
+          </mat-form-field>
+        </div>
+
         <button
-          mat-icon-button
-          matSuffix
-          (click)="cvvHide = !cvvHide"
-          [attr.aria-label]="'Hide password'"
-          [attr.aria-pressed]="cvvHide"
+          mat-raised-button
+          (click)="onSubmit()"
+          [disabled]="!paymentForm.valid"
+          color="primary"
+          class="col-12 my-3"
         >
-          <mat-icon>{{ cvvHide ? "visibility_off" : "visibility" }}</mat-icon>
+          Pay {{ tempScreen.amount | currency: "INR" }}
         </button>
-        <mat-error *ngIf="cvvErrors">{{ cvvErrors }}</mat-error>
-      </mat-form-field>
+      </form>
     </div>
-  </form>
-  <button mat-raised-button (click)="onCancel()" class="me-2">Cancel</button>
-  <button
-    mat-raised-button
-    (click)="onSubmit()"
-    [disabled]="!paymentForm.valid"
-    color="primary"
-    class="ms-2"
-  >
-    Pay {{ amountToBePaid | currency: "INR" }}
-  </button>
+    <div class="col-6 px-2 mx-auto order-1">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" colspan="2">Booking Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Auditorium</td>
+            <th scope="row">{{ selectedMembers.auditoriumName }}</th>
+          </tr>
+          <tr>
+            <td>Show</td>
+            <th scope="row">
+              {{ selectedMembers.showName }}
+            </th>
+          </tr>
+          <tr>
+            <td>Show Timing</td>
+            <th scope="row">
+              {{ formatTime(selectedMembers.showTime) }}
+            </th>
+          </tr>
+          <tr>
+            <td>Movie Name</td>
+            <th scope="row">{{ selectedMembers.movieName | uppercase }}</th>
+          </tr>
+          <tr>
+            <td>Movie Lang</td>
+            <th scope="row">{{ selectedMembers.movieLanguage }}</th>
+          </tr>
+          <tr>
+            <td>Date</td>
+            <th scope="row">{{ selectedMembers.date | date: "mediumDate" }}</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

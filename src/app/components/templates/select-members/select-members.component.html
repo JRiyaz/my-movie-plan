@@ -1,20 +1,15 @@
 <mat-card>
-  <form [formGroup]="ticketsForm">
+  <form [formGroup]="ticketsForm" (ngSubmit)="proceed()">
     <mat-horizontal-stepper [linear]="true" labelPosition="bottom" #stepper>
-      <mat-step [stepControl]="ticketsForm.get('auditorium')!">
+      <mat-step [stepControl]="ticketsForm.get('auditoriumName')!">
         <ng-template matStepLabel>Select the Cinema Hall</ng-template>
         <mat-form-field class="d-block w-100 mt-2">
           <mat-label>Cinema Hall Name</mat-label>
-          <mat-select
-            class="text-dark"
-            formControlName="auditorium"
-            name="auditorium"
-            [(ngModel)]="tempAuditoriumId"
-          >
+          <mat-select class="text-dark" formControlName="auditoriumName">
             <mat-option
-              *ngFor="let hall of tempAuditoriums"
-              [value]="hall.id"
-              (onSelectionChange)="onAuditoriumSelect(hall.id!)"
+              *ngFor="let hall of allAuditoriums$ | async"
+              [value]="hall.name"
+              (onSelectionChange)="onAuditoriumSelect(hall.id!, hall.name!)"
             >
               {{ hall.name }}
             </mat-option>
@@ -22,45 +17,68 @@
           <mat-error *ngIf="auditoriumErrors">{{ auditoriumErrors }}</mat-error>
         </mat-form-field>
         <div>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperNext type="button">Next</button>
         </div>
       </mat-step>
+
       <mat-step
-        [stepControl]="ticketsForm.get('showTime')!"
+        [stepControl]="ticketsForm.get('showName')!"
         label="Select the Show Timing"
       >
         <mat-form-field class="d-block w-100 mt-2">
           <mat-label class="text-dark">Show Timing</mat-label>
-          <mat-select
-            class="text-dark"
-            formControlName="showTime"
-            name="showTime"
-            [(ngModel)]="tempShowId"
-          >
+          <mat-select class="text-dark" formControlName="showName">
             <mat-option
-              *ngFor="let showTiming of tempShows"
-              [value]="showTiming.id"
-              (onSelectionChange)="onTimingSelect(showTiming.id!)"
+              *ngFor="let show of allShows$ | async"
+              [value]="show.name"
+              (onSelectionChange)="onShowSelect(show.id!, show.name!)"
             >
-              {{
-                "Show: " + showTiming.name + " Time: " + showTiming.startTime
-              }}
+              {{ show.name + " | Time: " + formatTime(show.startTime) }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="timingErrors">{{ timingErrors }}</mat-error>
+          <mat-error *ngIf="showErrors">{{ showErrors }}</mat-error>
         </mat-form-field>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperPrevious type="button">Back</button>
+          <button mat-button matStepperNext type="button">Next</button>
         </div>
       </mat-step>
+
       <mat-step
-        [stepControl]="ticketsForm.get('seat')!"
+        [stepControl]="ticketsForm.get('date')!"
+        label="Select the Date"
+      >
+        <mat-form-field class="d-block w-100 mt-2">
+          <mat-label class="text-dark">Choose a date</mat-label>
+          <input
+            class="text-dark"
+            formControlName="date"
+            (dateChange)="onDateSelect($event)"
+            matInput
+            [matDatepicker]="picker"
+            [min]="startDate$ | async"
+            [max]="endDate$ | async"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="dateErrors">{{ dateErrors }}</mat-error>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious type="button">Back</button>
+          <button mat-button matStepperNext type="button">Next</button>
+        </div>
+      </mat-step>
+
+      <mat-step
+        [stepControl]="ticketsForm.get('seats')!"
         label="Select No.of seats"
       >
         <div
           class="col-12 my-4 text-center"
-          [ngClass]="templateSelectedSeats > 0 ? 'text-primary' : 'text-danger'"
+          [ngClass]="selectedSeats! > 0 ? 'text-primary' : 'text-danger'"
         >
           <mat-icon
             class="fs-1"
@@ -70,23 +88,23 @@
             {{ icon }}
           </mat-icon>
         </div>
-        <div *ngIf="templateSelectedSeats < 1" class="text-center text-danger">
+        <div *ngIf="selectedSeats! < 1" class="text-center text-danger">
           No Seats avaliable, please select different show timing
         </div>
         <div
-          *ngIf="templateSelectedSeats > 0"
+          *ngIf="selectedSeats! > 0"
           class="row g-0 justify-content-around mb-4"
         >
           <div
             class="col-auto mx-2"
-            *ngFor="let seat of tempNoOfSeatsAvaliable"
+            *ngFor="let seat of avaliableSeats$ | async"
           >
             <input
               type="radio"
               class="btn-check"
-              formControlName="seat"
-              name="seat"
-              [(ngModel)]="templateSelectedSeats"
+              formControlName="seats"
+              [checked]="seat == selectedSeats"
+              (change)="onSeatsChange(seat)"
               [id]="seat"
               [value]="seat"
             />
@@ -94,7 +112,7 @@
               [for]="seat"
               class="px-3 py-2 rounded-circle border border-4 pe-cursor fs-5"
               [ngClass]="
-                seat == templateSelectedSeats
+                seat == selectedSeats!
                   ? 'text-success, border-success'
                   : 'text-warning, border-secondary'
               "
@@ -104,11 +122,12 @@
           </div>
         </div>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperPrevious type="button">Back</button>
           <button
             mat-button
             matStepperNext
-            [disabled]="templateSelectedSeats < 1"
+            [disabled]="selectedSeats! < 1"
+            type="button"
           >
             next
           </button>
@@ -119,20 +138,32 @@
         <table class="table table-striped">
           <tr>
             <th scope="col">Auditorium</th>
-            <td>{{ templateGetAuditoriumName }}</td>
+            <td>{{ ticketsForm.get("auditoriumName")?.value! }}</td>
           </tr>
           <tr>
             <th scope="col">Show</th>
-            <td>{{ templateGetShowNameAndTiming }}</td>
+            <td>
+              {{
+                ticketsForm.get("showName")?.value! +
+                  " | Time: " +
+                  formatTime(selectMembers?.showTime!)
+              }}
+            </td>
+          </tr>
+          <tr>
+            <th scope="col">Date</th>
+            <td>{{ ticketsForm.get("date")?.value! | date: "fullDate" }}</td>
           </tr>
           <tr>
             <th scope="col">Seats</th>
-            <td>{{ templateSelectedSeats }}</td>
+            <td>{{ ticketsForm.get("seats")?.value! }}</td>
           </tr>
         </table>
         <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="proceed()">Proceed</button>
+          <button mat-button matStepperPrevious type="button">Back</button>
+          <button mat-button color="primary" [disabled]="!ticketsForm.valid">
+            Proceed
+          </button>
         </div>
       </mat-step>
     </mat-horizontal-stepper>
