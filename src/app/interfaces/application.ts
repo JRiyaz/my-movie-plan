@@ -3,13 +3,25 @@ export interface Application {
 
 export interface User {
     id?: string;
-    name: string;
+    name?: string;
     email: string;
-    mobile: string;
-    gender: string;
-    terms: boolean;
-    password: string;
+    mobile?: string;
+    gender?: string;
+    terms?: boolean;
+    password?: string;
     userRole: string;
+}
+
+export class UserImpl implements User {
+    id: string = '';
+    name: string = '';
+    email: string = '';
+    mobile: string = '';
+    gender: string = '';
+    terms: boolean = true;
+    password: string = '';
+    userRole: string = '';
+
 }
 
 export interface Credentials {
@@ -26,10 +38,10 @@ export interface Movie {
     story?: string;
     duration?: string;
     addedOn?: Date;
-    rating?: string;
+    caption?: string;
     release?: Date;
     genres?: string[];
-    languages?: string[];
+    language?: string;
     casts?: Actor[];
     crews?: Actor[];
 }
@@ -57,9 +69,8 @@ export interface Show {
 export interface MovieShow {
     id?: number;
     start?: Date;
-    end?: Date;
-    avalibleSeats?: number;     // Add this field in backend
-    movie?: Movie;              // Need movie, add this in backed
+    end?: Date;   // Add this field in backend
+    movieId?: number;              // Need movie, add this in backed
     bookings?: Booking[];
     price?: Price;
 }
@@ -68,10 +79,10 @@ export interface Booking {
     id?: number;
     amount?: number;
     totalSeats?: number;
+    bookedOn?: Date;
     dateOfBooking?: Date;
-    status?: boolean;
     seatNumbers?: string[];
-    user?: User;                 // Need user, add this in backed
+    userId?: string;                 // Need user, add this in backed
     payment?: Payment;
 }
 
@@ -94,28 +105,30 @@ export interface Payment {
 
 export interface Actor {
     id?: number;
+    isCast: string;
     name: string;
     role: string;
     image: string;
 }
 
-export interface TempAddMovieToShow {
-    movieId: number;
-    start: Date,
-    end: Date,
-    price: Price,
-}
-
 export interface TempSelectMembers {
-    auditoriumId: number;
-    showId: number;
+    auditoriumId: number,
+    auditoriumName: string;
+    showId: number,
+    showName: string;
+    showTime: string;
+    movieShowId: number;
+    bookedSeats: number;
+    bookedSeatNumbers: string[];
+    date: Date;
+    movieName: string;
+    movieLanguage: string;
     seats: number;
 }
 
 export interface TempScreen {
-    auditoriumId: number;
-    showId: number;
-    selectedSeats: Set<string>;
+    selectedSeats: number;
+    selectedSeatNumbers: string[];
     amount: number;
 }
 
@@ -124,4 +137,23 @@ export interface TempAuditoriumShowSelectedForSeatBooking {
     showId: number;
     noOfSeats: number;
     alreadySelectedSeats: string[];
+}
+
+export interface Token {
+    token: string;
+}
+
+export interface HttpResponse {
+    statusCode: number;
+    error: string;
+    message: string;
+}
+
+export interface BookedSeats {
+    count: number;
+    seats: string[];
+}
+
+export interface LeaveForm {
+    areYouSure(): boolean;
 }
