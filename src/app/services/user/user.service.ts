@@ -1,46 +1,79 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { User } from 'src/app/interfaces/application';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  private users: any[] = [
-    { id: 1, name: 'Riyaz J', email: 'j.riyazu@gmail.com', gender: 'Male', address: { city: 'Bengaluru', street: 'KR Puram', zip: '8099531318' } },
-    { id: 2, name: 'Fayaz J', email: 'j.fayaz@gmail.com', gender: 'Male', address: { city: 'Hyderabad', street: 'Kukatpalli', zip: '660006' } },
-    { id: 3, name: 'Inthiyaz J', email: 'j.inthiyaz@gmail.com', gender: 'Male', address: { city: 'B.Kothakota', street: 'Santha Bazar Street', zip: '517370' } },
-    { id: 4, name: 'Begum J', email: 'j.begum@gmail.com', gender: 'Female', address: { city: 'B.Kothakota', street: 'Santha Bazar Street', zip: '517370' } },
-    { id: 5, name: 'Alfiya', email: 'j.alfiya@gmail.com', gender: 'Female', address: { city: 'B.Kothakota', street: 'Santha Bazar Street', zip: '517370' } },
-    { id: 6, name: 'Aisha', email: 'j.aisha@gmail.com', gender: 'Female', address: { city: 'B.Kothakota', street: 'Santha Bazar Street', zip: '517370' } },
-    { id: 7, name: 'Apsa', email: 'j.apsa@gmail.com', gender: 'Female', address: { city: 'B.Kothakota', street: 'Santha Bazar Street', zip: '517370' } },
-    { id: 8, name: 'Yusuf', email: 'j.yusuf@gmail.com', gender: 'Male', address: { city: 'B.Kothakota', street: 'Santha Bazar Street', zip: '517370' } },
-  ]
+  constructor(private _authService: AuthService, private _router: Router) { }
 
-  constructor() { }
+  getUser(): User | null {
+    const user_email = localStorage.getItem('user-email');
+    const user_role = localStorage.getItem('user-role');
+    const user_id = localStorage.getItem('user-id');
 
-  // isEmailExists(email: string): boolean {
-  //   return this.users.find(user => user.email == email) ? true : false;
-  // }
+    // if (this.getToken() != null && user_email == null)
+    //   this.setToken(this.getToken()!);
 
-  isEmailExists(email: string): Observable<boolean> {
-    return of<boolean>(this.users.find(user => user.email == email)).pipe(delay(4000));
-  }
-
-  isMobileExists(mobile: string): Observable<boolean> {
-    return of<boolean>(this.users.find(user => user.zip == mobile)).pipe(delay(4000));
-  }
-
-  isEmailOrMobileExists(email_mobile: string): Observable<boolean> {
-    let isFound = false;
-    for (let i = 0; i < this.users.length; i++) {
-      console.log(this.users[i].name);
-      if (this.users[i].email == email_mobile || this.users[i].zip == email_mobile) {
-        isFound = true;
-        break;
+    if (user_email && user_role && user_id) {
+      const user: User = {
+        email: user_email,
+        userRole: user_role,
+        id: user_id
       }
+      return user;
     }
-    return of<boolean>(isFound).pipe(delay(4000));
+    else
+      return null;
+  }
+
+  private setUser(user: User): void {
+    localStorage.setItem('user-email', user.email);
+    localStorage.setItem('user-role', user.userRole);
+    localStorage.setItem('user-id', user.id!);
+  }
+
+  private removeUser(): boolean {
+    localStorage.removeItem('user-email');
+    localStorage.removeItem('user-role');
+    localStorage.removeItem('user-id');
+    return true;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getUser();
+  }
+
+  isAdmin(): boolean {
+    const user = this.getUser();
+    return !!user?.userRole && (user?.userRole == 'ROLE_ADMIN' || user?.userRole == 'ROLE_SUPER_ADMIN')
+  }
+
+  setToken(token: string): boolean {
+    console.warn('from set Token');
+    localStorage.setItem('token', token);
+    this._authService.getLoggedInUser().subscribe(user => {
+      this.setUser(user)
+    });
+    return true
+  }
+
+  getToken(): string | null {
+    const token = localStorage.getItem('token');
+    // if (!token) {
+    //   this._router.navigate(['/user/login'], { queryParams: { 'wrong': true } });
+    //   return;
+    // }
+    return token;
+  }
+
+  removeToken(): boolean {
+    console.warn('from remove token');
+    localStorage.removeItem('token');
+    this.removeUser();
+    return true;
   }
 }
