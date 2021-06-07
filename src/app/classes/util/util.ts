@@ -2,8 +2,8 @@ export class Util {
 
     private static date: string = '15 May 2021';
 
-    static toAmOrPm(time: string): string {
-        return new Date(`${Util.date} ${time}`).toLocaleTimeString('en-US');
+    static formatTimeToAmOrPm(time: string): string {
+        return new Date(`${Util.date} ${time}`).toLocaleTimeString('en-Us', { hour: '2-digit', minute: '2-digit' });
     }
 
     static extractTimeAndConvertToNumber(time: string): number {
@@ -16,6 +16,15 @@ export class Util {
             month: "short",
             year: "numeric"
         });
+    }
+
+    static findEndDate(dates: any[]): Date {
+        let tempDate = new Date();
+        if (dates)
+            for (let i = 0; i < dates.length; i++)
+                if (new Date(dates[i]) > tempDate)
+                    tempDate = new Date(dates[i]);
+        return tempDate;
     }
 
     static getTomarrow(date: any): Date {

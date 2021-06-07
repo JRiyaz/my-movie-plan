@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
-import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { AbstractControl, ValidatorFn } from "@angular/forms";
 import { Show } from "src/app/interfaces/application";
-import { GlobalService } from "src/app/services/global/global.service";
 import { Util } from "../util/util";
 
 @Injectable({
@@ -9,66 +8,70 @@ import { Util } from "../util/util";
 })
 export class ApplicationValidator {
 
-    constructor(private service: GlobalService) { }
-
-    uniqueAuditoriumName(control: AbstractControl): ValidationErrors | null {
-        return this.service.getAuditoriumNames()
-            .find(auditorium => auditorium.toLowerCase() == control.value.toLowerCase())
-            ? { 'uniqueName': true }
-            : null;
-        return null;
-    }
-
-    uniqueMovieName(control: AbstractControl): ValidationErrors | null {
-        return this.service.getMovieNames()
-            .find(movie => movie.toLowerCase() == control.value.toLowerCase())
-            ? { 'uniqueName': true }
-            : null;
-        return null;
-    }
-
-    public static uniqueFacility(facilities: string[]): ValidatorFn {
+    static uniqueAuditoriumName(auditoriumNames: string[]): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
-            return facilities?.find(facility => facility.toLowerCase() == control.value.toLowerCase())
+            return auditoriumNames ? auditoriumNames
+                .find(name => name.toLowerCase() == control.value.toLowerCase())
                 ? { 'uniqueName': true }
-                : null;
+                : null : null;
         };
     }
 
-    public static uniqueSafeties(safeties: string[]): ValidatorFn {
+    static uniqueMovieName(movieNames: string[]): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
-            return safeties?.find(safety => safety.toLowerCase() == control.value.toLowerCase())
+            return movieNames ? movieNames
+                .find(name => name.toLowerCase() == control.value.toLowerCase())
                 ? { 'uniqueName': true }
-                : null;
+                : null : null;
         };
     }
 
-    // public static uniqueAuditoriumName(auditoriums: string[]): ValidatorFn {
-    //     return (control: AbstractControl): { [key: string]: boolean } | null => {
-    //         return auditoriums?.find(auditorium => auditorium.toLowerCase() == control.value.toLowerCase())
-    //             ? { 'uniqueName': true }
-    //             : null;
-    //     };
-    // }
-
-    // https://www.infragistics.com/community/blogs/b/infragistics/posts/how-to-create-custom-validators-for-angular-reactive-forms
-    public static uniqueShowName(shows: Show[]): ValidatorFn {
+    static validMovieGenre(genres: string[]): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
-            return shows?.find(show => show.name.toLowerCase() == control.value.toLowerCase())
+            return genres ? genres
+                .find(genre => genre.toLowerCase() == control.value.toLowerCase())
+                ? null
+                : { 'validGenre': true } : null;
+        };
+    }
+
+    static uniqueFacility(facilities: string[]): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            return facilities ? facilities.find(facility => facility.toLowerCase() == control.value.toLowerCase())
                 ? { 'uniqueName': true }
-                : null;
+                : null : null;
+        };
+    }
+
+    static uniqueSafeties(safeties: string[]): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            return safeties ? safeties.find(safety => safety.toLowerCase() == control.value.toLowerCase())
+                ? { 'uniqueName': true }
+                : null : null;
+        };
+    }
+
+    static uniqueShowName(shows: Show[]): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: boolean } | null => {
+            return shows ? shows.find(show => show.name.toLowerCase() == control.value.toLowerCase())
+                ? { 'uniqueName': true }
+                : null : null;
         };
     }
 
     public static uniqueShowTime(shows: Show[]): ValidatorFn {
         return (control: AbstractControl): { [key: string]: boolean } | null => {
-            let isNotValid = false;
-            for (let i = 0; i < shows?.length; i++)
-                if (!ApplicationValidator.isTimeDifferenceValid(shows[i]?.startTime, control.value)) {
-                    isNotValid = true;
-                    break;
-                }
-            return isNotValid ? { 'uniqueTime': true } : null;
+            if (shows) {
+                let isNotValid = false;
+                for (let i = 0; i < shows?.length; i++)
+                    if (!ApplicationValidator.isTimeDifferenceValid(shows[i]?.startTime, control.value)) {
+                        isNotValid = true;
+                        break;
+                    }
+                return isNotValid ? { 'uniqueTime': true } : null;
+            }
+            else
+                return null;
         };
     }
 
@@ -79,4 +82,65 @@ export class ApplicationValidator {
         return difference >= 10000000 || difference <= -10000000 ? true : false;
     }
 
+    // uniqueAuditoriumName(control: AbstractControl): ValidationErrors | null {
+    //     return new GlobalService().getAuditoriumNames()
+    //         .find(auditorium => auditorium.toLowerCase() == control.value.toLowerCase())
+    //         ? { 'uniqueName': true }
+    //         : null;
+    //     return null;
+    // }
+
+    // uniqueAuditoriumName(auditoriumNames: string[]): ValidationErrors | null {
+    //     return (control: AbstractControl): { [key: string]: boolean } | null => {
+    //         return auditoriumNames
+    //             .find(name => name.toLowerCase() == control.value.toLowerCase())
+    //             ? { 'uniqueName': true }
+    //             : null;
+    //     }
+    // }
+
+    // uniqueMovieName(movieNames: string[]): ValidationErrors | null {
+    //     return (control: AbstractControl): { [key: string]: boolean } | null => {
+    //         return movieNames
+    //             .find(name => name.toLowerCase() == control.value.toLowerCase())
+    //             ? { 'uniqueName': true }
+    //             : null;
+    //     }
+    // }
+    // return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
+    //     return this._service.getMovieNames()
+    //         .pipe(
+    //             map((movies: string[]) => {
+    //                 console.log('validating movie names');
+    //                 return movies.find(movie => movie.toLowerCase() == control.value.toLowerCase())
+    //                     ? { 'uniqueName': true }
+    //                     : null
+    //             }
+    //             )
+    //         );
+    // }
+
+
+    // validMovieLanguage(control: AbstractControl): ValidationErrors | null {
+    //     return GlobalConstants.ALL_LANGUAGES
+    //         .find(language => language.toLowerCase() == control.value.toLowerCase())
+    //         ? null
+    //         : { 'validLanguage': true };
+    // }
+    // validMovieGenre(control: AbstractControl): ValidationErrors | null {
+    //     return GlobalConstants.ALL_GENERS
+    //         .find(genre => genre.toLowerCase() == control.value.toLowerCase())
+    //         ? null
+    //         : { 'validLanguage': true };
+    // }
+
+    // public static uniqueAuditoriumName(auditoriums: string[]): ValidatorFn {
+    //     return (control: AbstractControl): { [key: string]: boolean } | null => {
+    //         return auditoriums?.find(auditorium => auditorium.toLowerCase() == control.value.toLowerCase())
+    //             ? { 'uniqueName': true }
+    //             : null;
+    //     };
+    // }
+
+    // https://www.infragistics.com/community/blogs/b/infragistics/posts/how-to-create-custom-validators-for-angular-reactive-forms
 }

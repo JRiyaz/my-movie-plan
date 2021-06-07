@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/forms";
-import { Observable, of } from "rxjs";
-import { debounceTime, distinctUntilChanged, map, switchMap } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { Token } from "src/app/interfaces/application";
 import { AuthService } from "src/app/services/auth/auth.service";
 
 @Injectable({
@@ -9,7 +10,7 @@ import { AuthService } from "src/app/services/auth/auth.service";
 })
 export class UserValidator {
 
-    constructor(private service: AuthService) {
+    constructor(private _service: AuthService) {
     }
 
     static required(control: AbstractControl): { [key: string]: boolean } | null {
@@ -18,45 +19,40 @@ export class UserValidator {
 
     get uniqueEmail(): AsyncValidatorFn | AsyncValidatorFn[] | null | undefined {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            return of<string>(control.value).pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                switchMap(value => {
-                    return this.service.checkUniqueness(value).pipe(
-                        map((result: string) => result ? { 'unique': true } : null)
-                    );
-                })
-            );
+            return this._service.checkUniqueness(control.value)
+                .pipe(
+                    map((res: Token) => {
+                        console.log(res.token);
+                        return res.token ? { unique: true } : null;
+                    })
+                );
         };
     }
 
     get uniqueMobile(): AsyncValidatorFn | AsyncValidatorFn[] | null | undefined {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            return of<string>(control.value).pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                switchMap(value => {
-                    return this.service.checkUniqueness(value).pipe(
-                        map((result: string) => result ? null : { 'unique': true })
-                    );
-                })
-            );
+            return this._service.checkUniqueness(control.value)
+                .pipe(
+                    map((res: Token) => {
+                        console.log(res.token);
+                        return res.token ? { unique: true } : null;
+                    })
+                );
         };
     }
 
     get isEmailOrMobilePresent(): AsyncValidatorFn | AsyncValidatorFn[] | null | undefined {
         return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-            return of<string>(control.value).pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                switchMap(value => {
-                    return this.service.checkUniqueness(value).pipe(
-                        map((result: string) => result ? null : { 'present': true })
-                    );
-                })
-            );
+            return this._service.checkUniqueness(control.value)
+                .pipe(
+                    map((res: Token) => {
+                        console.log(res.token);
+                        return res.token ? null : { present: true };
+                    })
+                );
         };
     }
+
 
     // static uniqueEmail(control: AbstractControl): Promise<ValidationErrors | null> | null {
     //     const service = new UserService();
