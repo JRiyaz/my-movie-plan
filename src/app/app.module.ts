@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -28,12 +29,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 
+import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HomePageComponent } from './components/home-page/home-page.component';
-import { ViewMoviesComponent } from './components/view-movies/view-movies.component';
 import { MovieComponent } from './components/movie/movie.component';
 import { LoginComponent } from './components/login/login.component';
 import { LayoutComponent } from './components/layout/layout.component';
@@ -46,19 +46,28 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
 import { AuditoriumFormComponent } from './components/auditorium-form/auditorium-form.component';
 import { MovieFormComponent } from './components/movie-form/movie-form.component';
 import { ManageComponent } from './components/manage/manage.component';
-
+import { MoviesComponent } from './components/movies/movies.component';
 import { ScreenComponent } from './components/templates/screen/screen.component';
 import { ShowFormComponent } from './components/templates/show-form/show-form.component';
 import { SelectMembersComponent } from './components/templates/select-members/select-members.component';
 import { PaymentFormComponent } from './components/templates/payment-form/payment-form.component';
 import { AddMovieToShowFormComponent } from './components/templates/add-movie-to-show-form/add-movie-to-show-form.component';
 import { TicketComponent } from './components/templates/ticket/ticket.component';
-import { HttpClientModule } from '@angular/common/http';
+import { MyBookingsComponent } from './components/my-bookings/my-bookings.component';
 
 import { AuthService } from './services/auth/auth.service';
 import { GlobalService } from './services/global/global.service';
-import { ApplicationService } from './services/application/application.service';
+import { TokenInterceptorService } from './services/token-interceptor/token-interceptor.service';
+import { UserService } from './services/user/user.service';
 
+import { SearchPipe } from './pipes/search.pipe';
+
+import { AuthGuard } from './guards/auth/auth.guard';
+import { AdminGuard } from './guards/admin/admin.guard';
+// import { ApplicationService } from './services/application/application.service';
+
+// import { ApplicationValidator } from './classes/validators/application-validator';
+// import { UserValidator } from './classes/validators/user-validator';
 
 const materialModules: any[] = [
   MatButtonModule,
@@ -99,7 +108,6 @@ const components: any[] = [
   HeaderComponent,
   FooterComponent,
   HomePageComponent,
-  ViewMoviesComponent,
   MovieComponent,
   LoginComponent,
   LayoutComponent,
@@ -111,6 +119,8 @@ const components: any[] = [
   AuditoriumFormComponent,
   MovieFormComponent,
   ManageComponent,
+  MoviesComponent,
+  MyBookingsComponent,
   templates
 ]
 
@@ -126,20 +136,26 @@ const angularModules: any[] = [
 
 const services: any[] = [
   AuthService,
-  ApplicationService,
-  GlobalService
+  GlobalService,
+  UserService
 ]
+
+// const validators: any[] = [
+//   UserValidator,
+//   ApplicationValidator
+// ]
 
 const providers: any[] = [
   GlobalConstants,
-  // MatDatepickerModule,
+  AuthGuard,
+  AdminGuard,
   services
 ];
 
 @NgModule({
-  declarations: [components],
-  imports: [angularModules, materialModules],
-  providers: [providers],
+  declarations: [components, SearchPipe],
+  imports: [angularModules, materialModules, BrowserAnimationsModule],
+  providers: [providers, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
   bootstrap: [AppComponent],
   entryComponents: [templates]
 })

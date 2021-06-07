@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AboutUsComponent } from './components/about-us/about-us.component';
-import { AddMovieToShowFormComponent } from './components/templates/add-movie-to-show-form/add-movie-to-show-form.component';
 import { AuditoriumFormComponent } from './components/auditorium-form/auditorium-form.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
@@ -12,32 +11,43 @@ import { LoginComponent } from './components/login/login.component';
 import { ManageComponent } from './components/manage/manage.component';
 import { MovieFormComponent } from './components/movie-form/movie-form.component';
 import { MovieComponent } from './components/movie/movie.component';
-import { PaymentFormComponent } from './components/templates/payment-form/payment-form.component';
+import { MoviesComponent } from './components/movies/movies.component';
+import { MyBookingsComponent } from './components/my-bookings/my-bookings.component';
 import { RegisterComponent } from './components/register/register.component';
+import { PaymentFormComponent } from './components/templates/payment-form/payment-form.component';
 import { ScreenComponent } from './components/templates/screen/screen.component';
-import { ViewMoviesComponent } from './components/view-movies/view-movies.component';
 import { TicketComponent } from './components/templates/ticket/ticket.component';
+import { AdminGuard } from './guards/admin/admin.guard';
+import { AuthGuard } from './guards/auth/auth.guard';
+import { FromCloseGuard } from './guards/form/from-close.guard';
 
 const routes: Routes = [
   {
     path: '', component: LayoutComponent, children: [
       { path: '', redirectTo: '/home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
-      { path: 'now-showing', component: ViewMoviesComponent },
-      { path: 'up-comming', component: ViewMoviesComponent },
-      { path: 'movie', component: MovieComponent },
-      // { path: 'movie/:id', component: MovieComponent },
-      // { path: ':id', component: MovieComponent },
+      { path: 'movies', component: MoviesComponent },
+      { path: 'movie/:movieId', component: MovieComponent },
       { path: 'about', component: AboutUsComponent },
       { path: 'contact', component: ContactUsComponent },
-      { path: 'screen', component: ScreenComponent },
+      { path: 'select-seats', component: ScreenComponent },
       { path: 'movie', component: MovieComponent },
-      { path: 'add-auditorium', component: AuditoriumFormComponent },
-      { path: 'add-movie', component: MovieFormComponent },
+      { path: 'payment', component: PaymentFormComponent, canActivate: [AuthGuard] },
+      { path: 'ticket', component: TicketComponent },
+      {
+        path: 'my', canActivate: [AuthGuard], children: [
+          { path: '', redirectTo: '/my/bookings', pathMatch: 'full' },
+          { path: 'bookings', component: MyBookingsComponent }
+        ]
+      },
+    ]
+  },
+  {
+    path: 'admin', component: LayoutComponent, canActivate: [AdminGuard], children: [
+      { path: '', redirectTo: '/admin/manage', pathMatch: 'full' },
       { path: 'manage', component: ManageComponent },
-      { path: 'show', component: AddMovieToShowFormComponent },
-      { path: 'payment', component: PaymentFormComponent },
-      { path: 'ticket', component: TicketComponent }
+      { path: 'add-auditorium', component: AuditoriumFormComponent, canDeactivate: [FromCloseGuard] },
+      { path: 'add-movie', component: MovieFormComponent, canDeactivate: [FromCloseGuard] }
     ]
   },
   {
