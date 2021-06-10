@@ -159,8 +159,8 @@ export class ApplicationService {
     ================= Booking Service ====================
   */
 
-  getBooking(booking: number): Observable<Booking> {
-    return this._http.get<Booking>(`${GlobalConstants.BOOKING_URL}/${booking}`);
+  getBooking(bookingId: number): Observable<Booking> {
+    return this._http.get<Booking>(`${GlobalConstants.BOOKING_URL}/${bookingId}`);
   }
 
   getAuditoriumShowMovieShowBooking(auditoriumId: number, showId: number, movieShowId: number, bookingId: number): Observable<Booking> {
@@ -227,6 +227,14 @@ export class ApplicationService {
     // let params = new HttpParams().set('on', on.toISOString().slice(0, 10));
     // let params = new HttpParams().set('on', o);
     return this._http.get<BookedSeats>(`${GlobalConstants.MOVIESHOWS_URL}/${movieShowId}/booked-seats/${on.toLocaleDateString('fr-CA')}`);
+  }
+
+  /* 
+  ================= Booking Details ====================
+  */
+
+  getBookingDetails(bookingId: number): Observable<Booking> {
+    return this._http.get<Booking>(`${GlobalConstants.BOOKING_URL}/${bookingId}/details`);
   }
 }
 

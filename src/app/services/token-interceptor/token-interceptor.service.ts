@@ -26,7 +26,7 @@ export class TokenInterceptorService implements HttpInterceptor {
     // return next.handle(req);
 
     return next.handle(req).pipe(catchError(err => {
-      const error = err.error?.message! || err.statusText!;
+      const error = err! || err.error?.message! || err.statusText!;
       if (error == 'Invalid Token') {
         console.warn(error);
         userService.removeToken();

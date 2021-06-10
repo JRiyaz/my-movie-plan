@@ -27,6 +27,10 @@ export class AuthService {
     return this._http.put<HttpResponse>(GlobalConstants.FORGOT_PASSWORD_URL, credentials, { headers: { skip: "true" } });
   }
 
+  updateUser(userId: string, user: User): Observable<User> {
+    return this._http.put<User>(`${GlobalConstants.UPDATE_USER_URL}/${userId}`, user);
+  }
+
   getLoggedInUser(): Observable<User> {
     return this._http.get<User>(GlobalConstants.GET_LOGGED_IN_USER_URL);
   }
