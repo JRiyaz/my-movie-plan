@@ -15,11 +15,13 @@ export class GlobalConstants {
 
     public static HALL_FACILITIES: string[] = ['MTicket', 'Wheel Chair Facility', 'Recliner Seats', 'Parking Facility', 'Food Court', 'Ticket Cancellation', 'f & B'];
 
-    public static ROOT_URL = 'http://localhost:5555';
+    public static ROOT_URL = 'http://34.204.2.214:5555/my-movie-plan';
 
     public static REGISTER_URL = `${GlobalConstants.ROOT_URL}/user/sign-up`;
 
     public static CHECK_UNIQUENESS_URL = `${GlobalConstants.ROOT_URL}/user/check`;
+
+    public static UPDATE_USER_URL = `${GlobalConstants.ROOT_URL}/user/update`;
 
     public static GET_LOGGED_IN_USER_URL = `${GlobalConstants.ROOT_URL}/user/get-user`;
 

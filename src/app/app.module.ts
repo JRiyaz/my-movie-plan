@@ -52,8 +52,8 @@ import { ShowFormComponent } from './components/templates/show-form/show-form.co
 import { SelectMembersComponent } from './components/templates/select-members/select-members.component';
 import { PaymentFormComponent } from './components/templates/payment-form/payment-form.component';
 import { AddMovieToShowFormComponent } from './components/templates/add-movie-to-show-form/add-movie-to-show-form.component';
-import { TicketComponent } from './components/templates/ticket/ticket.component';
 import { MyBookingsComponent } from './components/my-bookings/my-bookings.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 import { AuthService } from './services/auth/auth.service';
 import { GlobalService } from './services/global/global.service';
@@ -64,10 +64,6 @@ import { SearchPipe } from './pipes/search.pipe';
 
 import { AuthGuard } from './guards/auth/auth.guard';
 import { AdminGuard } from './guards/admin/admin.guard';
-// import { ApplicationService } from './services/application/application.service';
-
-// import { ApplicationValidator } from './classes/validators/application-validator';
-// import { UserValidator } from './classes/validators/user-validator';
 
 const materialModules: any[] = [
   MatButtonModule,
@@ -99,8 +95,7 @@ const templates: any[] = [
   ShowFormComponent,
   ScreenComponent,
   PaymentFormComponent,
-  AddMovieToShowFormComponent,
-  TicketComponent
+  AddMovieToShowFormComponent
 ]
 
 const components: any[] = [
@@ -121,6 +116,7 @@ const components: any[] = [
   ManageComponent,
   MoviesComponent,
   MyBookingsComponent,
+  ProfileComponent,
   templates
 ]
 
@@ -139,11 +135,6 @@ const services: any[] = [
   GlobalService,
   UserService
 ]
-
-// const validators: any[] = [
-//   UserValidator,
-//   ApplicationValidator
-// ]
 
 const providers: any[] = [
   GlobalConstants,

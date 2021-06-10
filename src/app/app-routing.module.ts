@@ -13,10 +13,10 @@ import { MovieFormComponent } from './components/movie-form/movie-form.component
 import { MovieComponent } from './components/movie/movie.component';
 import { MoviesComponent } from './components/movies/movies.component';
 import { MyBookingsComponent } from './components/my-bookings/my-bookings.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { PaymentFormComponent } from './components/templates/payment-form/payment-form.component';
 import { ScreenComponent } from './components/templates/screen/screen.component';
-import { TicketComponent } from './components/templates/ticket/ticket.component';
 import { AdminGuard } from './guards/admin/admin.guard';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { FromCloseGuard } from './guards/form/from-close.guard';
@@ -30,20 +30,19 @@ const routes: Routes = [
       { path: 'movie/:movieId', component: MovieComponent },
       { path: 'about', component: AboutUsComponent },
       { path: 'contact', component: ContactUsComponent },
-      { path: 'select-seats', component: ScreenComponent },
-      { path: 'movie', component: MovieComponent },
+      { path: 'select-seats', component: ScreenComponent, canActivate: [AuthGuard] },
       { path: 'payment', component: PaymentFormComponent, canActivate: [AuthGuard] },
-      { path: 'ticket', component: TicketComponent },
       {
-        path: 'my', canActivate: [AuthGuard], children: [
-          { path: '', redirectTo: '/my/bookings', pathMatch: 'full' },
+        path: 'my', children: [ //canActivate: [AuthGuard]
+          { path: '', redirectTo: '/my/profile', pathMatch: 'full' },
+          { path: 'profile', component: ProfileComponent },
           { path: 'bookings', component: MyBookingsComponent }
         ]
       },
     ]
   },
   {
-    path: 'admin', component: LayoutComponent, canActivate: [AdminGuard], children: [
+    path: 'admin', component: LayoutComponent, canActivate: [AuthGuard, AdminGuard], children: [
       { path: '', redirectTo: '/admin/manage', pathMatch: 'full' },
       { path: 'manage', component: ManageComponent },
       { path: 'add-auditorium', component: AuditoriumFormComponent, canDeactivate: [FromCloseGuard] },

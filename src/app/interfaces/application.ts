@@ -10,6 +10,10 @@ export interface User {
     terms?: boolean;
     password?: string;
     userRole: string;
+    isAccountNonExpired?: boolean;
+    isAccountNonLocked?: boolean;
+    isCredentialsNonExpired?: boolean;
+    isEnabled?: boolean;
 }
 
 export class UserImpl implements User {
@@ -84,6 +88,15 @@ export interface Booking {
     seatNumbers?: string[];
     userId?: string;                 // Need user, add this in backed
     payment?: Payment;
+    bookingDetails: BookingDetails;
+}
+
+export interface BookingDetails {
+    id?: number;
+    auditoriumId: number;
+    showId: number;
+    movieShowId: number;
+    movieId: number;
 }
 
 export interface Price {
@@ -122,6 +135,7 @@ export interface TempSelectMembers {
     bookedSeatNumbers: string[];
     date: Date;
     movieName: string;
+    movieId: number;
     movieLanguage: string;
     seats: number;
 }
