@@ -110,9 +110,10 @@ export class LoginComponent implements OnInit {
                 this._router.navigate(['/home'], { queryParams: { 'logged-in': true } });
           },
           err => {
+            this.alertMessage$.next(err!);
+            console.warn(err);
             this.showAlert$.next(true);
             this.alertDanger$.next(true);
-            this.alertMessage$.next(err.error.message);
           }
         );
   }

@@ -1,0 +1,29 @@
+<div class="h-80vh">
+  <div class="col-10 mx-auto my-4">
+    <mat-toolbar color="primary" class="rounded text-center"
+      >Your profile</mat-toolbar
+    >
+  </div>
+  <mat-card class="col-10 mx-auto">
+    <table class="table">
+      <tbody>
+        <tr>
+          <th scope="row">Name</th>
+          <td>{{ (user | async)?.name }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Email</th>
+          <td>{{ (user | async)?.email }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Mobile</th>
+          <td>{{ (user | async)?.mobile }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Gender</th>
+          <td>{{ (user | async)?.gender }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card>
+</div>

@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Util } from 'src/app/classes/util/util';
-import { Booking, Payment, TempScreen, TempSelectMembers } from 'src/app/interfaces/application';
+import { Booking, BookingDetails, Payment, TempScreen, TempSelectMembers } from 'src/app/interfaces/application';
 import { ApplicationService } from 'src/app/services/application/application.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 
@@ -139,18 +139,26 @@ export class PaymentFormComponent implements OnInit {
       paymentData.paymentDate = new Date();
       paymentData.amount = this.tempScreen.amount;
 
+      const b_details: BookingDetails = {
+        auditoriumId: members.auditoriumId,
+        showId: members.showId,
+        movieShowId: members.movieShowId,
+        movieId: members.movieId,
+      }
+
       const booking: Booking = {
         amount: this.tempScreen.amount,
         bookedOn: new Date(),
         dateOfBooking: members.date,
         totalSeats: this.tempScreen.selectedSeats,
         seatNumbers: this.tempScreen.selectedSeatNumbers,
+        bookingDetails: b_details,
         payment: paymentData,
       }
       this._appService.addBooking(members.auditoriumId, members.showId, members.movieShowId, booking)
         .subscribe(booking => {
           if (booking) {
-            this._router.navigate(['/user/bookings'], { queryParams: { 'payment': true } });
+            this._router.navigate(['/my/bookings'], { queryParams: { 'payment': true } });
           }
         })
     }

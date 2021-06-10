@@ -1,21 +1,151 @@
-<div class="col-8 mx-auto my-4">
+<div class="col-10 mx-auto my-4 h-80vh">
   <mat-toolbar color="primary" class="rounded text-center">
-    Your booking list
+    <h1
+      class="text-center mx-auto"
+      [ngClass]="present ? '' : 'text-danger h-80vh'"
+    >
+      {{ heading }}
+    </h1>
   </mat-toolbar>
 
-  <mat-accordion>
-    <mat-expansion-panel
-      *ngFor="let booking of allBookings$ | async; index as i"
-      (opened)="onBookingChange(booking.id!)"
-      [expanded]="i == 0 ? true : false"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title> {{ "Booking " + (i + 1) }} </mat-panel-title>
-        <mat-panel-description>
-          {{ "booked on: " + booking.bookedOn }}
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <p>Ticket</p>
-    </mat-expansion-panel>
-  </mat-accordion>
+  <mat-card *ngIf="present">
+    <div class="row g-0 col-12">
+      <div class="col-2 p-2">
+        <div
+          class="my-2 col-12 text-start"
+          *ngFor="let booking of allBookings$ | async; index as i"
+        >
+          <input
+            type="radio"
+            autocomplete="off"
+            [checked]="booking.id == selectedBookingId"
+            class="btn-check"
+            [id]="'booking-' + i"
+            name="booking"
+            (change)="onBookingChange(booking.id!)"
+          />
+          <label
+            class="btn btn-sm w-100 clearfix"
+            [for]="'booking-' + i"
+            [ngClass]="{
+              'btn-dark text-white': booking.id == selectedBookingId,
+              'btn-info': booking.id != selectedBookingId
+            }"
+          >
+            <span class="d-inline-block float-start">{{
+              "Booking " + (i + 1)
+            }}</span>
+            <span class="d-inline-block float-end">{{ booking.bookedOn }}</span>
+          </label>
+        </div>
+      </div>
+      <div class="col-10 px-2">
+        <div class="row g-0 m-3 p-2 shadow-sm border">
+          <div
+            class="
+              col-4
+              mx-auto
+              text-center
+              px-1
+              position-relative
+              overflow-hidden
+            "
+          >
+            <img
+              [src]="movieImage$ | async"
+              [alt]="movieName$ | async"
+              height="400"
+              width="300"
+            />
+            <div
+              class="
+                movie-name
+                position-absolute
+                w-100
+                py-2
+                fs-5
+                bg-dark
+                text-white
+                start-0
+                bottom-0
+              "
+            >
+              {{ movieName$ | async | uppercase }}
+            </div>
+          </div>
+          <div class="col-8 px-2 details h-100 my-auto">
+            <table class="table ms-3">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    colspan="2"
+                    class="text-center fs-4 text-capitalize"
+                  >
+                    {{ auditoriumName$ | async }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Movie Language</th>
+                  <td>
+                    <h1 class="m-0 d-inline-block">
+                      {{ movieLanguage$ | async }}
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Total seats</th>
+                  <td>
+                    <h1 class="m-0 d-inline-block">
+                      {{ noOfTickets$ | async }}
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Seat No.</th>
+                  <td>
+                    <h1 class="m-0 d-inline-block">
+                      {{ (selectedSeats$ | async)?.join(", ") }}
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Price</th>
+                  <td>
+                    <h1 class="m-0 d-inline-block">
+                      {{ amount$ | async | currency: "INR" }}
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Date</th>
+                  <td>
+                    <h1 class="m-0 d-inline-block">
+                      {{ dateOfBooking$ | async | date: "mediumDate" }}
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Time</th>
+                  <td>
+                    <h1 class="m-0 d-inline-block">
+                      {{ formatTime((showTiming$ | async)!) }}
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Status</th>
+                  <td>
+                    <span class="text-muted text-success">Confirmed</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
 </div>

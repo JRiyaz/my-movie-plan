@@ -18,6 +18,7 @@ class SelectMembers implements TempSelectMembers {
   bookedSeatNumbers: string[] = [];
   date: Date = new Date();
   movieName: string = '';
+  movieId = 0;
   movieLanguage: string = '';
   seats: number = 0;
 
@@ -130,6 +131,7 @@ export class SelectMembersComponent implements OnInit {
         this.endDate$ = of(movieShow?.end!);
         this.selectMembers.showTime = show?.startTime!;
         this.selectMembers.movieShowId = movieShow?.id!;
+        this.selectMembers.movieId = this._data.movieId;
       })
       this.ticketsForm.get('date')?.reset;
     }

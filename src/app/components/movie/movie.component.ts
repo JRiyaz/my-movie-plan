@@ -56,7 +56,7 @@ export class MovieComponent implements OnInit {
       sheet.afterDismissed().subscribe(data => {
         if (data?.tempSelectMembers) {
           this._globalService.setTempSelectMembers(data.tempSelectMembers);
-          this._router.navigate(['../select-seats']);
+          this._router.navigate(['/select-seats']);
         }
       });
     }
