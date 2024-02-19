@@ -1,24 +1,28 @@
-FROM node:current-alpine3.11 as build-stage
+FROM node:16-alpine3.18 AS build-stage
 
-# RUN mkdir -p /app
-
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json package-lock.json ./
+
+EXPOSE 4200
 
 RUN npm install
 
 COPY . .
 
+# RUN npm install -g @angular/cli@11.2.14
+
+# CMD ["ng", "serve","--host", "0.0.0.0", "--disable-host-check"]
+
 RUN npm run build --prod
 
-# CMD ["npm", "start"]
+FROM nginx:alpine3.18
 
-FROM nginx:latest-alpine as prod-stage
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=build-stage /usr/src/app/dist/my-movie-plan /user/share/nginx/html
+COPY --from=build-stage /app/dist/my-movie-plan /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 4200
 
-EXPOSE 4040
-
+CMD nginx -g "daemon off;"

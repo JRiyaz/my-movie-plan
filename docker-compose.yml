@@ -1,8 +1,8 @@
 version: "3.2"
 
 services:
-  angular-my-movie-plan:
-    container_name: angular-my-movie-plan
-    build:
-      context: ./my-movie-plan
-      dockerfile: .
+  movie-plan:
+    container_name: movie-plan
+    build: .
+    ports:
+      - 4200:4200
